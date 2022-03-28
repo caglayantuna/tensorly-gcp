@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: tensorly-gcp
+Version: 0.1.0
+Summary: Generalized CP Decomposition with Tensorly
+Home-page: UNKNOWN
+Author: Jean Kossaifi
+Author-email: jean.kossaifi@gmail.com
+License: Modified BSD
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Topic :: Scientific/Engineering
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python :: 3
+Description-Content-Type: text/x-rst
