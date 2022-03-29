@@ -3,6 +3,7 @@ from tensorly.testing import assert_, assert_class_wrapper_correctly_passes_argu
 from tensorly.cp_tensor import cp_to_tensor
 from tensorly.random import random_cp
 import tensorly as tl
+from tlgcp.utils import loss_operator
 
 
 def test_stochastic_generalized_parafac(monkeypatch):

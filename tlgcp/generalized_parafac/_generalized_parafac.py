@@ -1,10 +1,9 @@
-import numpy as np
 from tensorly.random import random_cp
 from tensorly.decomposition._base_decomposition import DecompositionMixin
 import tensorly as tl
 from tensorly.cp_tensor import CPTensor, validate_cp_rank, unfolding_dot_khatri_rao
-import scipy
 import math
+from ..utils import lbfgs
 
 
 def vectorize_factors(factors):
@@ -47,7 +46,7 @@ def vectorized_factors_to_tensor(vectorized_factors, shape, rank, return_factors
 
     cursor = 0
     for i in range(n_factors):
-        #tl.gather
+        # tl.gather
         factors.append(tl.reshape(vectorized_factors[cursor: cursor + shape[i]*rank], [shape[i], rank]))
         cursor += shape[i] * rank
 
@@ -334,7 +333,8 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
         fun_loss = loss_operator(tensor, rank, loss=loss)
         fun_gradient = gradient_operator(tensor, rank, loss=loss)
 
-    vectorized_factors, rec_errors = tl.lbfgs(fun_loss, vectorized_factors, fun_gradient, n_iter_max=n_iter_max, non_negative=non_negative, norm=norm)
+    vectorized_factors, rec_errors = lbfgs(fun_loss, vectorized_factors, fun_gradient, n_iter_max=n_iter_max,
+                                           non_negative=non_negative, norm=norm)
     _, factors = vectorized_factors_to_tensor(vectorized_factors, tl.shape(tensor), rank, return_factors=True)
 
     cp_tensor = CPTensor((weights, factors))
@@ -397,8 +397,8 @@ class GCP(DecompositionMixin):
            SIAM Journal on Mathematics of Data Science, 2(4), 1066-1095.
     """
 
-    def __init__(self, rank, n_iter_max=100, init='svd', svd='numpy_svd', loss='gaussian'
-                 , random_state=None, return_errors=True, fun_loss=None, fun_gradient=None):
+    def __init__(self, rank, n_iter_max=100, init='svd', svd='numpy_svd', loss='gaussian',
+                 random_state=None, return_errors=True, fun_loss=None, fun_gradient=None):
         self.rank = rank
         self.n_iter_max = n_iter_max
         self.init = init

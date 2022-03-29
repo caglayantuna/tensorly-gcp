@@ -5,6 +5,7 @@ import tensorly as tl
 from tensorly.cp_tensor import CPTensor, validate_cp_rank, unfolding_dot_khatri_rao
 import scipy
 import math
+from ..utils import lbfgs
 
 
 def vectorize_factors(factors):
@@ -334,7 +335,8 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
         fun_loss = loss_operator(tensor, rank, loss=loss)
         fun_gradient = gradient_operator(tensor, rank, loss=loss)
 
-    vectorized_factors, rec_errors = tl.lbfgs(fun_loss, vectorized_factors, fun_gradient, n_iter_max=n_iter_max, non_negative=non_negative, norm=norm)
+    vectorized_factors, rec_errors = lbfgs(fun_loss, vectorized_factors, fun_gradient, n_iter_max=n_iter_max,
+                                              non_negative=non_negative, norm=norm)
     _, factors = vectorized_factors_to_tensor(vectorized_factors, tl.shape(tensor), rank, return_factors=True)
 
     cp_tensor = CPTensor((weights, factors))

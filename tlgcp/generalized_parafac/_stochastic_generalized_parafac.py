@@ -1,16 +1,14 @@
 import numpy as np
-from tensorly.random import random_cp
 from tensorly.decomposition._base_decomposition import DecompositionMixin
 import tensorly as tl
-from tensorly.cp_tensor import CPTensor, validate_cp_rank, unfolding_dot_khatri_rao
-import scipy
-import math
+from tensorly.cp_tensor import CPTensor, validate_cp_rank
 from tensorly.decomposition._cp import sample_khatri_rao
 from ._generalized_parafac import initialize_generalized_parafac
 from ..utils import loss_operator, gradient_operator
 
+
 def stochastic_gradient(tensor, factors, batch_size, loss='gaussian', random_state=None, mask=None):
-    '''
+    """
     Computes stochastic gradient between given tensor and estimated factors according to the given loss and batch size.
     Parameters
     ----------
@@ -26,7 +24,7 @@ def stochastic_gradient(tensor, factors, batch_size, loss='gaussian', random_sta
     -------
     ndarray
           Stochastic gradient between tensor and factors according to the given batch size and loss.
-    '''
+    """
     if random_state is None or not isinstance(random_state, np.random.RandomState):
         rng = tl.check_random_state(random_state)
     else:
