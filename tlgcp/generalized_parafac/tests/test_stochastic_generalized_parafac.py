@@ -1,10 +1,14 @@
-from .._stochastic_generalized_parafac import stochastic_generalized_parafac, Stochastic_GCP
+from .._stochastic_generalized_parafac import stochastic_generalized_parafac, stochastic_gradient, Stochastic_GCP
 from tensorly.testing import assert_, assert_class_wrapper_correctly_passes_arguments
 from tensorly.cp_tensor import cp_to_tensor
 from tensorly.random import random_cp
 import tensorly as tl
-from tlgcp.utils import loss_operator
+from ...utils import loss_operator
 
+
+def test_stochastic_gradient():
+    """Test for the Stochastic gradient
+    """
 
 def test_stochastic_generalized_parafac(monkeypatch):
     """Test for the Stochastic Generalized Parafac decomposition

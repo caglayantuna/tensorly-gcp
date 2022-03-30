@@ -1,0 +1,5 @@
+numpy
+scipy
+tensorly
+pytest
+pytest-cov

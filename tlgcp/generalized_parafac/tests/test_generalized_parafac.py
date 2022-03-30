@@ -1,4 +1,5 @@
-from .._generalized_parafac import generalized_parafac, loss_operator, gradient_operator, vectorize_factors, GCP
+from .._generalized_parafac import (generalized_parafac, loss_operator, gradient_operator, vectorize_factors,
+                                    vectorized_factors_to_tensor, vectorized_mttkrp, GCP)
 from tensorly.testing import assert_, assert_class_wrapper_correctly_passes_arguments
 from tensorly.cp_tensor import cp_to_tensor
 from tensorly.random import random_cp
@@ -21,6 +22,12 @@ def test_gradient_operator():
     # Gaussian gradient
     function = gradient_operator(tensor, rank=3, loss="gaussian")
     assert_(callable(function) == True)
+
+def test_vectorize_factors():
+
+def test_vectorized_factors_to_tensor():
+
+def test_vectorized_mttkrp():
 
 
 def test_generalized_parafac(monkeypatch):

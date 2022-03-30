@@ -46,12 +46,10 @@ def vectorized_factors_to_tensor(vectorized_factors, shape, rank, return_factors
 
     cursor = 0
     for i in range(n_factors):
-        # tl.gather
         factors.append(tl.reshape(vectorized_factors[cursor: cursor + shape[i]*rank], [shape[i], rank]))
         cursor += shape[i] * rank
 
     if return_factors:
-        # we should return a cp_tensor, i.e. (tl.ones(n_factors),factors)
         return CPTensor((None, factors))
     else:
         return tl.cp_to_tensor((None, factors))
@@ -171,28 +169,6 @@ def gradient_operator(tensor, rank, loss):
         return lambda x: vectorized_mttkrp(-tensor / ((vectorized_factors_to_tensor(x, shape, rank) + epsilon) ** 2) + (1 / (vectorized_factors_to_tensor(x, shape, rank) + epsilon)), x, rank) / size
     else:
         raise ValueError('Loss "{}" not recognized'.format(loss))
-
-
-def adam(loss_func, x0, gradient_func=None, n_iter_max=100, non_negative=False, norm=1):
-    rec_errors = []
-    momentum_first = tl.zeros(tl.shape(x0,))
-    momentum_second = tl.zeros(tl.shape(x0))
-    lr = 0.001
-    beta_1 = 0.9
-    beta_2 = 0.999
-    epsilon = 1e-8
-    for iter in range(n_iter_max):
-        gradient = gradient_func(x0)
-        momentum_first = (beta_1 * momentum_first) + (1 - beta_1) * gradient
-        momentum_second = beta_2 * momentum_second + (1 - beta_2) * (gradient ** 2)
-        momentum_first_hat = momentum_first / (1 - (beta_1 ** (iter + 1)))
-        momentum_second_hat = momentum_second / (1 - (beta_2 ** (iter + 1)))
-        x = x0 - lr * momentum_first_hat / (tl.sqrt(momentum_second_hat) + epsilon)
-        if non_negative:
-            x = tl.clip(x, 0)
-        x0 = tl.copy(x)
-        rec_errors.append(loss_func(x0) / norm)
-    return x, rec_errors
 
 
 def initialize_generalized_parafac(tensor, rank, init='random', svd='numpy_svd', loss='gaussian', random_state=None):
