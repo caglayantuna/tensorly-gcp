@@ -9,6 +9,15 @@ from ...utils import loss_operator
 def test_stochastic_gradient():
     """Test for the Stochastic gradient
     """
+    shape = [8, 10, 6]
+    rank = 3
+    weights, factors = random_cp(shape, rank)
+    tensor = tl.cp_to_tensor((weights, factors))*100
+    gradient = stochastic_gradient(tensor, factors, batch_size=10)
+    assert_(tl.shape(gradient[0])[0] == shape[0])
+    assert_(tl.shape(gradient[1])[0] == shape[1])
+    assert_(tl.shape(gradient[2])[0] == shape[2])
+
 
 def test_stochastic_generalized_parafac(monkeypatch):
     """Test for the Stochastic Generalized Parafac decomposition

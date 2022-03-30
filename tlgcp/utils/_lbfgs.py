@@ -14,11 +14,11 @@ def lbfgs(loss, x0, gradient=None, n_iter_max=100, non_negative=False, norm=1.0)
     gradient: callable
         Default: None
     n_iter_max: int
-       Default: 100
+        Default: 100
     non_negative: bool
-       Default: False
+        Default: False
     norm: float
-       Default
+        Default
 
     Returns
     ----------
@@ -27,17 +27,19 @@ def lbfgs(loss, x0, gradient=None, n_iter_max=100, non_negative=False, norm=1.0)
 
     Notes
     --------
-    Content of this function could be useful for future Tensorly developers to adapt GCP to tensorly for all backends.
+    Content of this function could be useful for Tensorly developers to adapt GCP to tensorly for all backends.
     Currently, it supports only numpy backend, but it could be improved for other backends as well.
 
-    - pytorch: imposing non-negative constraint not good and not good for some losses because of the backward part
+    - pytorch: imposing non-negative constraint not good also it fails for some losses because of the backward part
     , probably.
 
-    - tensorflow: no option for constrained loss. Doesn't return error per iteration
+    - tensorflow: There is no option for constrained loss, and it doesn't return error per iteration. Besides,
+    tensorflow_probability library is a requirement.
 
-    - jax:
+    - jax: jax.scipy.minimize only supports bfgs according to website (https://jax.readthedocs.io/en/latest/_autosummary/jax.scipy.optimize.minimize.html)
+    However, there are some attempts to add lbfgs (https://github.com/google/jax/pull/6053).
 
-    - mxnet
+    - mxnet: This issue can be followed. https://github.com/apache/incubator-mxnet/issues/9182
     """
 
     if tl.get_backend() == "numpy":

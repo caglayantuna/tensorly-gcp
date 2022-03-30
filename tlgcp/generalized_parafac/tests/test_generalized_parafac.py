@@ -1,6 +1,6 @@
 from .._generalized_parafac import (generalized_parafac, loss_operator, gradient_operator, vectorize_factors,
                                     vectorized_factors_to_tensor, vectorized_mttkrp, GCP)
-from tensorly.testing import assert_, assert_class_wrapper_correctly_passes_arguments
+from tensorly.testing import assert_, assert_array_equal, assert_class_wrapper_correctly_passes_arguments
 from tensorly.cp_tensor import cp_to_tensor
 from tensorly.random import random_cp
 import tensorly as tl
@@ -24,10 +24,35 @@ def test_gradient_operator():
     assert_(callable(function) == True)
 
 def test_vectorize_factors():
+    """Test for the vectorized_factors
+    """
+    shape = [8, 10, 6]
+    rank = 3
+    weights, factors = random_cp(shape, rank)
+    vec_factors = vectorize_factors(factors)
+    assert_(len(vec_factors) == tl.sum(shape*rank))
 
 def test_vectorized_factors_to_tensor():
+    """Test for the vectorized_factors_to_tensor
+    """
+    shape = [8, 10, 6]
+    rank = 3
+    weights, factors = random_cp(shape, rank, normalise_factors=False)
+    tensor = tl.cp_to_tensor((weights, factors))
+    vec_factors = vectorize_factors(factors)
+    rec_tensor = vectorized_factors_to_tensor(vec_factors, shape, rank)
+    assert_array_equal(tensor, rec_tensor)
 
 def test_vectorized_mttkrp():
+    """Test for the vectorized_mttkrp
+    """
+    shape = [8, 10, 6]
+    rank = 3
+    weights, factors = random_cp(shape, rank)
+    vec_factors = vectorize_factors(factors)
+    tensor = tl.cp_to_tensor((weights, factors))
+    vec_mttkrp = vectorized_mttkrp(tensor, vec_factors, rank)
+    assert_(len(vec_mttkrp) == tl.sum(shape*rank))
 
 
 def test_generalized_parafac(monkeypatch):
