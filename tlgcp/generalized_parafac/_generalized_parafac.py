@@ -305,7 +305,7 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
     else:
         non_negative = False
 
-    if fun_loss or fun_gradient is None:
+    if loss is not None:
         fun_loss = loss_operator(tensor, rank, loss=loss)
         fun_gradient = gradient_operator(tensor, rank, loss=loss)
 
