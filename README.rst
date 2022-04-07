@@ -2,25 +2,31 @@ TensorLy-Gcp
 ===============================================  
 TensorLy-Gcp is a Python library for generalized parafac decomposition (GCP) [1] and its stochastic version (SGCP) [2] which allow using different kind of losses rather than only Euclidean  that builds on top of `TensorLy <http://tensorly.org/dev/installation.html>`_. Both algorithms aim at decreasing loss between the input tensor and estimated tensor by using gradient which is calculated according to the selected loss by the user.
 
-While GCP implementation uses Limited-memory BFGS (LBFGS) method for optimization, SGCP uses ADAM optimization as in [2].  
+While GCP implementation uses Limited-memory BFGS (LBFGS) method for optimization, SGCP uses ADAM optimization as in [2]. Following losses can be used in Tensorly-Gcp:
 
-Following table gives existing losses in Tensorly-Gcp with their gradients and constraints: 
-
-
-
-|Distribution   | Loss          | Gradient |Constraints|  
-|:--------------:|:-------------:|:--------:|-----------|  
-|Rayleigh        | $2\log(m) + (\pi/4)(x/(m + \epsilon))^2$| $2\times(m) + (\pi/4)(x/(m))^2$             |$x>0$, $m>0$|  
-| Bernoulli odds | $\log(m + 1) - x\log(m + \epsilon)$       | $1 / (m + 1) - x/(m + \epsilon)$          |$x\in(0,1), m>0$|  
-| Bernoulli logit| $\log(1 + e^m) - xm$                     | $e^m / (e^m+1) - x$                         |$x\in(0,1), m>0$|  
-| Gamma          |$x / (m + \epsilon) + \log(m + \epsilon)$|$-x / ((m + \epsilon)^2) + 1/(m + \epsilon)$|$x>0$, $m>0$      |  
-| Poisson count  | $m - x\log(m + \epsilon)$           | $1 - x/(m + \epsilon$)                     |$m>0$       |  
-| Poisson log    | $e^m - xm$                              | $e^m - x$                             |                      |  
-| Gaussian       | $(x - m)^2$       | $2\times(m - x)$                            |                      |  
+- Rayleigh
+- Bernoulli odds
+- Bernoulli logit
+- Gamma
+- Poisson count
+- Poisson log
+- Gaussian
 
 Contributing
 ============
-At the moment, only NUmpy backend is supported to implement GCP and SGCP. This library can be compatible with other backends (Pytorch, Tensorflow, Jax, Mxnet) by improving LBFGS with the given information in `here <https://github.com/caglayantuna/tensorly-gcp/blob/master/tlgcp/utils/_lbfgs.py>`_. Then, this library can be merged in TensorLy.
+At the moment, only Numpy backend is supported to implement GCP and SGCP. This library can be compatible with other backends (Pytorch, Tensorflow, Jax, Mxnet) by improving LBFGS with the given information in `here <https://github.com/caglayantuna/tensorly-gcp/blob/master/tlgcp/utils/_lbfgs.py>`_. Then, this library can be merged in TensorLy.
+
+Usage
+============
+It is possible select one of the losses from the list above according to your data distribution and you can apply generalized decomposition easily:
+
+.. code:: python
+    
+    from tlgcp import generalized_parafac
+    rank = 3
+    loss = 'rayleigh'
+    tensorgcp, errorsgcp = generalized_parafac(tensor, rank=rank, loss=loss)
+
 
 Installing TensorLy-GCP  
 =========================
