@@ -51,8 +51,8 @@ config = {
     'description': 'Generalized CP Decomposition with Tensorly',
     'long_description': README,
     'long_description_content_type': 'text/x-rst',
-    'author': 'Jean Kossaifi',
-    'author_email': 'jean.kossaifi@gmail.com',
+    'author': 'Caglayan Tuna',
+    'author_email': '', # TODO
     'version': VERSION,
     #'url': 'https://github.com/tensorly/tensorly-torch',
     #'download_url': 'https://github.com/tensorly/tensorly-torch/tarball/' + VERSION,
