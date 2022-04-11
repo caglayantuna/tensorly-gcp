@@ -8,7 +8,7 @@ from ..utils import lbfgs
 
 def vectorize_factors(factors):
     """
-    Vectorizes each factor, then concatenates them to return one vector
+    Vectorizes each factor, then concatenates them to return one vector.
 
     Parameters
     ----------
@@ -27,15 +27,16 @@ def vectorize_factors(factors):
 
 def vectorized_factors_to_tensor(vectorized_factors, shape, rank, return_factors=False):
     """
-    Turns vectorized factors of a CP decomposition into a reconstructed full tensor.
+    Transforms vectorized factors of a CP decomposition into a reconstructed full tensor.
 
     Parameters
     ----------
     vectorized_factors : 1darray, a vector of length :math:`\prod(shape) \times rank^\{\len(shape)\}`
     shape : tuple, contains the row dimensions of the factors
     rank : int, number of components in the CP decomposition
-    return_factors : bool, if True returns factors list instead of full tensor
-         Default: False
+    return_factors : bool, if True returns factors list instead of full tensor 
+        Default: False
+
 
     Returns
     -------
@@ -57,7 +58,7 @@ def vectorized_factors_to_tensor(vectorized_factors, shape, rank, return_factors
 
 def vectorized_mttkrp(tensor, vectorized_factors, rank):
     """
-    Vectorized unfolding times khatri-rao product of factors.
+    Computes the Matricized Tensor Times Khatri-Rao Product (MTTKRP) for all modes between a tensor and vectorized factors. Returns a vectorized stack of MTTKRPs.
 
     Parameters
     ----------
@@ -67,7 +68,8 @@ def vectorized_mttkrp(tensor, vectorized_factors, rank):
 
     Returns
     -------
-    vectorized_mttkrp : vector of length vectorized_factors containing the mttkrp for all modes
+    vectorized_mttkrp :
+        vector of length vectorized_factors containing the mttkrp for all modes
     """
     _, factors = vectorized_factors_to_tensor(vectorized_factors, tl.shape(tensor), rank, return_factors=True)
     all_mttkrp = []
@@ -247,12 +249,13 @@ def initialize_generalized_parafac(tensor, rank, init='random', svd='numpy_svd',
         kt.factors = [tl.abs(f) for f in kt[1]]
     return kt
 
+ default: False
 
 def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_svd',
                         random_state=None, return_errors=False, loss='gaussian', fun_loss=None, fun_gradient=None):
     """ Generalized PARAFAC decomposition by using LBFGS optimization
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
-        tensor = [|weights; factors[0], ..., factors[-1] |].
+        tensor \approx [|weights; factors[0], ..., factors[-1] |].
     Parameters
     ----------
     tensor : ndarray
