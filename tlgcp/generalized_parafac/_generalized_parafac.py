@@ -249,7 +249,6 @@ def initialize_generalized_parafac(tensor, rank, init='random', svd='numpy_svd',
         kt.factors = [tl.abs(f) for f in kt[1]]
     return kt
 
- default: False
 
 def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_svd',
                         random_state=None, return_errors=False, loss='gaussian', fun_loss=None, fun_gradient=None):
