@@ -55,16 +55,26 @@ def lbfgs(loss, x0, gradient=None, n_iter_max=100, non_negative=False, norm=1.0)
     elif tl.get_backend() == "pytorch":
         import torch
         x0.requires_grad = True
-        optimizer = torch.optim.LBFGS([x0], line_search_fn="strong_wolfe")
+        optimizer = torch.optim.LBFGS([x0], history_size=10, max_iter=4, line_search_fn="strong_wolfe")
         error = []
         for i in range(n_iter_max):
-            optimizer.zero_grad()
-            objective = loss(x0)
-            objective.backward()
+            def closure():
+                # Zero gradients
+                optimizer.zero_grad()
+
+                # Compute loss
+                objective = loss(x0)
+
+                # Backward pass
+                objective.backward()
+
+                return objective
+
             if non_negative:
                 with torch.no_grad():
                     x0.clamp(min=0)
-            optimizer.step(lambda: loss(x0))
+            optimizer.step(closure)
+            objective = closure()
             error.append(objective.item() / norm)
         return x0, error
 
@@ -74,12 +84,10 @@ def lbfgs(loss, x0, gradient=None, n_iter_max=100, non_negative=False, norm=1.0)
         def quadratic_loss_and_gradient(x):
             return tfp.math.value_and_gradient(loss, x)
         error = []
-        for i in range(n_iter_max):
-            optim_results = tfp.optimizer.lbfgs_minimize(quadratic_loss_and_gradient,
+        optim_results = tfp.optimizer.lbfgs_minimize(quadratic_loss_and_gradient,
                                                          initial_position=x0,
-                                                         max_iterations=1)
-            error.append(optim_results.objective_value / norm)
-            x0 = optim_results.position
+                                                         max_iterations=n_iter_max)
+        error.append(optim_results.objective_value / norm)
         return optim_results.position, error
 
     elif tl.get_backend() == "jax":
