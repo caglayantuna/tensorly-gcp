@@ -10,6 +10,7 @@ from ..utils import loss_operator, gradient_operator
 def stochastic_gradient(tensor, factors, batch_size, loss='gaussian', random_state=None, mask=None):
     """
     Computes stochastic gradient between given tensor and estimated factors according to the given loss and batch size.
+
     Parameters
     ----------
     tensor : ndarray
@@ -64,6 +65,7 @@ def stochastic_generalized_parafac(tensor, rank, n_iter_max=1000, init='random',
     """ Generalized PARAFAC decomposition by using ADAM optimization
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
         tensor = [|weights; factors[0], ..., factors[-1] |].
+
     Parameters
     ----------
     tensor : ndarray
@@ -184,6 +186,7 @@ class Stochastic_GCP(DecompositionMixin):
     """ Stochastic Generalized PARAFAC decomposition by using ADAM optimization
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
         tensor = [|weights; factors[0], ..., factors[-1] |].
+
     Parameters
     ----------
     tensor : ndarray

@@ -90,7 +90,6 @@ def loss_operator(tensor, rank, loss):
     - Poisson (count or log)
     - Bernoulli (odds or log)
 
-
     Parameters
     ----------
     tensor : ndarray, input tensor data
@@ -254,7 +253,8 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
                         random_state=None, return_errors=False, loss='gaussian', fun_loss=None, fun_gradient=None):
     """ Generalized PARAFAC decomposition by using LBFGS optimization
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
-        tensor \approx [|weights; factors[0], ..., factors[-1] |].
+        tensor = [|weights; factors[0], ..., factors[-1] |].
+
     Parameters
     ----------
     tensor : ndarray
@@ -277,6 +277,7 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
         Default :None
     fun_gradient : callable, optional. Use this if you defined a custom loss function, this should map x to the gradient of the loss (1darray of size x.shape).
         Default :None
+
     Returns
     -------
     CPTensor : (weight, factors)
@@ -326,6 +327,7 @@ class GCP(DecompositionMixin):
     """ Generalized PARAFAC decomposition by using Fista optimization
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
         tensor = [|weights; factors[0], ..., factors[-1] |].
+
     Parameters
     ----------
     tensor : ndarray

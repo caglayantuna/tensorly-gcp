@@ -6,6 +6,7 @@ def loss_operator(tensor, estimated_tensor, loss, mask=None):
     """
     Operator to use loss functions from [1] in order to compute loss for
     generalized parafac decomposition.
+
     Parameters
     ----------
     tensor : ndarray
@@ -14,6 +15,7 @@ def loss_operator(tensor, estimated_tensor, loss, mask=None):
     mask : ndarray
         array of booleans with the same shape as ``tensor`` should be 0 where
         the values are missing and 1 everywhere else.
+
     Returns
     -------
     error : ndarray
@@ -51,6 +53,7 @@ def gradient_operator(tensor, estimated_tensor, loss, mask=None):
     """
     Operator to use loss functions from [1] in order to compute gradient for
     generalized parafac decomposition.
+
     Parameters
     ----------
     tensor : ndarray
@@ -59,6 +62,7 @@ def gradient_operator(tensor, estimated_tensor, loss, mask=None):
     mask : ndarray
         array of booleans with the same shape as ``tensor`` should be 0 where
         the values are missing and 1 everywhere else.
+
     Returns
     -------
     gradient : ndarray
