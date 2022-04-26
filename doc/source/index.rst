@@ -38,7 +38,7 @@
    user_guide/index
    modules/api
    auto_examples/index
-   Notebooks <https://https://github.com/caglayantuna/tensorly-gcp/tree/master/tlgcp/notebooks>
+   Notebooks <https://github.com/caglayantuna/tensorly-gcp/tree/master/tlgcp/notebooks>
    about
 
 TensorLy-Gcp is a Python library for Generalized Parafac Decomposition Learning that

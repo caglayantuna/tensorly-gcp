@@ -115,7 +115,7 @@ html_theme_options = {
                    ('API', 'modules/api'),
                    ('Examples', 'auto_examples/index'),
                    ('About Us', 'about')],
-     'external_nav_links' : [('Notebooks', 'https://https://github.com/caglayantuna/tensorly-gcp/tree/master/tlgcp/notebooks')],
+     'external_nav_links' : [('Notebooks', 'https://github.com/caglayantuna/tensorly-gcp/tree/master/tlgcp/notebooks')],
     'external_nav_links' : [('TensorLy', 'http://tensorly.org/dev')]
 }
 
