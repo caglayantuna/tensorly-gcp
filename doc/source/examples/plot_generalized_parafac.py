@@ -67,9 +67,9 @@ array = np.random.binomial(1, cp_tensor / (cp_tensor + 1), size=shape)
 tensor = tl.tensor(array, dtype='float')
 
 ##############################################################################
-# GCP decomposition function requires loss and learning rate (LR) as differ from
-# existing tensorly decomposition functions. It should be noted that LR
-# should be tuned by the user since the algorithm is sensitive to its value.
+# GCP decomposition function requires loss as differ from
+# existing tensorly decomposition functions. It should be noted that loss
+# can be defined by the user.
 
 # GCP
 tic = time.time()
@@ -78,18 +78,19 @@ cp_reconstruction_gcp = tl.cp_to_tensor((tensor_gcp))
 time_gcp = time.time() - tic
 
 ##############################################################################
-# Stochastic GCP (SGCP) decomposition function requires batch size, epochs and beta
-# parameters (for ADAM) as input in addition to GCP decomposition inputs. Fortunately,
-# LR and beta parameters could be fixed thanks to the literature who works with
-# ADAM optimization. Besides, in case of badly chosen LR, SGCP updates the LR by dividing
-# LR by 10 after each failed iteration until reaching 20 successive bad iteration.
+# Stochastic GCP (SGCP) decomposition function requires learning rate (LR),
+# batch size, epochs and beta parameters (for ADAM) as input in addition to GCP
+# decomposition inputs. Fortunately, and beta parameters could be fixed thanks
+# to the literature who works with ADAM optimization. Besides, in case of
+# badly chosen LR, SGCP updates the LR by dividing LR by 10 after each failed
+# iteration until reaching 20 successive bad iteration.
 
 # SGCP
 tic = time.time()
 tensor_sgcp, errors_sgcp = stochastic_generalized_parafac(tensor, rank=rank, init=init,
                                                           return_errors=True, loss=loss, lr=1e-3,
                                                           n_iter_max=1000, batch_size=50, epochs=100)
-cp_reconstruction_sgcp = tl.cp_to_tensor((tensor_sgcp))
+cp_reconstruction_sgcp = tl.cp_to_tensor(tensor_sgcp)
 time_sgcp = time.time() - tic
 
 ##############################################################################

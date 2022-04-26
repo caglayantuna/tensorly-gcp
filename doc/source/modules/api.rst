@@ -22,6 +22,8 @@ Available functions
     :template: function.rst
 
     lbfgs
+    loss_operator
+    gradient_operator
 
 Decompositions
 -------------------

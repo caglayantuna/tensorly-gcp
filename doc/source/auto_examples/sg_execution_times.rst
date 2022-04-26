@@ -5,8 +5,8 @@
 
 Computation times
 =================
-**00:16.485** total execution time for **auto_examples** files:
+**00:13.992** total execution time for **auto_examples** files:
 
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_generalized_parafac.py` (``plot_generalized_parafac.py``) | 00:16.485 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_generalized_parafac.py` (``plot_generalized_parafac.py``) | 00:13.992 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+

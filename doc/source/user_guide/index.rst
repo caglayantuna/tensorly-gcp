@@ -8,7 +8,7 @@ TensorLy-Gcp builds on top of `TensorLy <tensorly.org>`_ and enables anyone to u
 
 .. toctree::
 
-   Dense GCP
-   Stochastic GCP
-   LBFG-S
+   decomposition.rst
+   backend.rst
+   optimization.rst
 
