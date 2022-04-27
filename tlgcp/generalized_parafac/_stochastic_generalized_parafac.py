@@ -21,6 +21,7 @@ def stochastic_gradient(tensor, factors, batch_size, loss='gaussian', random_sta
     mask : ndarray
         array of booleans with the same shape as ``tensor`` should be 0 where
         the values are missing and 1 everywhere else.
+
     Returns
     -------
     ndarray

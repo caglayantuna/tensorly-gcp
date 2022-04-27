@@ -7,10 +7,14 @@
 Gallery of examples
 ===================
 
-We provide examples of TensorLy-Gcp usage:
+.. contents:: **Contents**
+    :local:
+    :depth: 1
 
-1. :ref:`sphx_glr_auto_examples_plot_generalized_parafac.py`
+General examples
+----------------
 
+Examples of tensor usage.
 
 
 

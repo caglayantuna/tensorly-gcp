@@ -20,6 +20,7 @@ def loss_operator(tensor, estimated_tensor, loss, mask=None):
     -------
     error : ndarray
          Size based normalized loss for each entry
+
     References
     ----------
     .. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).
@@ -67,6 +68,7 @@ def gradient_operator(tensor, estimated_tensor, loss, mask=None):
     -------
     gradient : ndarray
         Size based normalized gradient for each entry
+
     References
     ----------
     .. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).

@@ -25,6 +25,30 @@ Available functions
     loss_operator
     gradient_operator
 
+.. automodule:: tlgcp.generalized_parafac._generalized_parafac
+    :no-members:
+    :no-inherited-members:
+
+.. autosummary::
+    :toctree: generated
+    :template: function.rst
+
+    vectorize_factors
+    vectorized_factors_to_tensor
+    vectorized_mttkrp
+    loss_operator_func
+    gradient_operator_func
+
+.. automodule:: tlgcp.generalized_parafac._stochastic_generalized_parafac
+    :no-members:
+    :no-inherited-members:
+
+.. autosummary::
+    :toctree: generated
+    :template: function.rst
+
+    stochastic_gradient
+
 Decompositions
 -------------------
 .. automodule:: tlgcp.generalized_parafac

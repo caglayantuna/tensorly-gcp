@@ -46,11 +46,9 @@ builds on top of `TensorLy <https://github.com/tensorly/tensorly/>`_.
 
 With TensorLy-Gcp, you can easily: 
 
-- **Losses**: You can use built-in losses such as gamma, poisson, rayleigh, gaussian and binomial,
-or you define your own losses.
+- **Losses**: You can use built-in losses such as gamma, poisson, rayleigh, gaussian and binomial, or you define your own losses.
 - **Stochastic**: It is also possible to implement stochastic version with selecting the batch size.
-- **Different backends**: TensorLy-Gcp uses LBFGS-S optimization which works for all backends (except Mxnet) of TensorLy
-with some constraints.
+- **Different backends**: TensorLy-Gcp uses LBFGS-S optimization which works for all backends (except Mxnet) of TensorLy with some constraints.
 
 .. only:: html
 

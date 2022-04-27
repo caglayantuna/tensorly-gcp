@@ -78,7 +78,7 @@ def vectorized_mttkrp(tensor, vectorized_factors, rank):
     return tl.concatenate(all_mttkrp, axis=0)
 
 
-def loss_operator(tensor, rank, loss):
+def loss_operator_func(tensor, rank, loss):
     """
     Various loss functions for generalized parafac decomposition, see [1] for more details.
     The returned function maps a vectorized factors input x to the loss (todo maths)
@@ -100,6 +100,7 @@ def loss_operator(tensor, rank, loss):
     -------
     function to calculate loss
          Size based normalized loss for each entry
+
     References
     ----------
     .. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).
@@ -128,7 +129,7 @@ def loss_operator(tensor, rank, loss):
         raise ValueError('Loss "{}" not recognized'.format(loss))
 
 
-def gradient_operator(tensor, rank, loss):
+def gradient_operator_func(tensor, rank, loss):
     """
     Operator to use loss functions from [1] in order to compute gradient for
     generalized parafac decomposition.
@@ -136,11 +137,8 @@ def gradient_operator(tensor, rank, loss):
     Parameters
     ----------
     tensor : ndarray
-    estimated_tensor : ndarray
+    rank : int, rank of
     loss : {'gaussian', 'gamma', 'rayleigh', 'poisson_count', 'poisson_log', 'bernoulli_odds', 'bernoulli_log'}
-    mask : ndarray
-        array of booleans with the same shape as ``tensor`` should be 0 where
-        the values are missing and 1 everywhere else.
 
     Returns
     -------
@@ -309,8 +307,8 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
         non_negative = False
 
     if loss is not None:
-        fun_loss = loss_operator(tensor, rank, loss=loss)
-        fun_gradient = gradient_operator(tensor, rank, loss=loss)
+        fun_loss = loss_operator_func(tensor, rank, loss=loss)
+        fun_gradient = gradient_operator_func(tensor, rank, loss=loss)
 
     vectorized_factors, rec_errors = lbfgs(fun_loss, vectorized_factors, fun_gradient, n_iter_max=n_iter_max,
                                            non_negative=non_negative, norm=norm)

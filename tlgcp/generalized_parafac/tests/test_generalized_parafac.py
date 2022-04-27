@@ -1,27 +1,28 @@
-from .._generalized_parafac import (generalized_parafac, loss_operator, gradient_operator, vectorize_factors,
-                                    vectorized_factors_to_tensor, vectorized_mttkrp, GCP)
+from .._generalized_parafac import (generalized_parafac, loss_operator_func, gradient_operator_func,
+                                    vectorize_factors, vectorized_factors_to_tensor, vectorized_mttkrp, GCP)
 from tensorly.testing import assert_, assert_array_equal, assert_class_wrapper_correctly_passes_arguments
 from tensorly.cp_tensor import cp_to_tensor
 from tensorly.random import random_cp
 import tensorly as tl
 
 
-def test_loss_operator():
+def test_loss_operator_func():
     """Test for loss operator"""
 
     tensor = tl.tensor([1, 0, 2, 2])
 
-    function = loss_operator(tensor, rank=3, loss="gaussian")
+    function = loss_operator_func(tensor, rank=3, loss="gaussian")
     assert_(callable(function) == True)
 
 
-def test_gradient_operator():
+def test_gradient_operator_func():
     """Test for gradient operator"""
     tensor = tl.tensor([1, 0, 2, 2])
 
     # Gaussian gradient
-    function = gradient_operator(tensor, rank=3, loss="gaussian")
+    function = gradient_operator_func(tensor, rank=3, loss="gaussian")
     assert_(callable(function) == True)
+
 
 def test_vectorize_factors():
     """Test for the vectorized_factors
@@ -31,6 +32,7 @@ def test_vectorize_factors():
     weights, factors = random_cp(shape, rank)
     vec_factors = vectorize_factors(factors)
     assert_(len(vec_factors) == tl.sum(shape*rank))
+
 
 def test_vectorized_factors_to_tensor():
     """Test for the vectorized_factors_to_tensor
@@ -42,6 +44,7 @@ def test_vectorized_factors_to_tensor():
     vec_factors = vectorize_factors(factors)
     rec_tensor = vectorized_factors_to_tensor(vec_factors, shape, rank)
     assert_array_equal(tensor, rec_tensor)
+
 
 def test_vectorized_mttkrp():
     """Test for the vectorized_mttkrp
@@ -71,7 +74,7 @@ def test_generalized_parafac(monkeypatch):
     tensor = tl.tensor(array)
     _, factors = generalized_parafac(tensor, loss=loss, rank=rank, init=init)
     vectorized_factors = vectorize_factors(factors)
-    fun_error = loss_operator(initial_tensor, rank, loss)
+    fun_error = loss_operator_func(initial_tensor, rank, loss)
     error = fun_error(vectorized_factors) / tl.norm(initial_tensor, 2)
     assert_(error < tol_norm_2,
             f'norm 2 of reconstruction higher = {error} than tolerance={tol_norm_2}')
@@ -82,7 +85,7 @@ def test_generalized_parafac(monkeypatch):
     tensor = tl.tensor(array)
     _, factors = generalized_parafac(tensor, loss=loss, rank=rank, init=init)
     vectorized_factors = vectorize_factors(factors)
-    fun_error = loss_operator(initial_tensor, rank, loss)
+    fun_error = loss_operator_func(initial_tensor, rank, loss)
     error = fun_error(vectorized_factors) / tl.norm(initial_tensor, 2)
     assert_(error < tol_norm_2,
             f'norm 2 of reconstruction higher = {error} than tolerance={tol_norm_2}')
@@ -93,7 +96,7 @@ def test_generalized_parafac(monkeypatch):
     tensor = tl.tensor(array)
     _, factors = generalized_parafac(tensor, loss=loss, rank=rank, init=init)
     vectorized_factors = vectorize_factors(factors)
-    fun_error = loss_operator(initial_tensor, rank, loss)
+    fun_error = loss_operator_func(initial_tensor, rank, loss)
     error = fun_error(vectorized_factors) / tl.norm(initial_tensor, 2)
     assert_(error < tol_norm_2,
             f'norm 2 of reconstruction higher = {error} than tolerance={tol_norm_2}')
@@ -104,7 +107,7 @@ def test_generalized_parafac(monkeypatch):
     tensor = tl.tensor(array)
     _, factors = generalized_parafac(tensor, loss=loss, rank=rank, init=init)
     vectorized_factors = vectorize_factors(factors)
-    fun_error = loss_operator(initial_tensor, rank, loss)
+    fun_error = loss_operator_func(initial_tensor, rank, loss)
     error = fun_error(vectorized_factors) / tl.norm(initial_tensor, 2)
     assert_(error < tol_norm_2,
             f'norm 2 of reconstruction higher = {error} than tolerance={tol_norm_2}')
@@ -115,7 +118,7 @@ def test_generalized_parafac(monkeypatch):
     tensor = tl.tensor(array)
     _, factors = generalized_parafac(tensor, loss=loss, rank=rank, init=init)
     vectorized_factors = vectorize_factors(factors)
-    fun_error = loss_operator(initial_tensor, rank, loss)
+    fun_error = loss_operator_func(initial_tensor, rank, loss)
     error = fun_error(vectorized_factors) / tl.norm(initial_tensor, 2)
     assert_(error < tol_norm_2,
             f'norm 2 of reconstruction higher = {error} than tolerance={tol_norm_2}')
@@ -129,7 +132,7 @@ def test_generalized_parafac(monkeypatch):
     tensor = tl.tensor(array)
     _, factors = generalized_parafac(tensor, loss=loss, rank=rank, init=init)
     vectorized_factors = vectorize_factors(factors)
-    fun_error = loss_operator(initial_tensor, rank, loss)
+    fun_error = loss_operator_func(initial_tensor, rank, loss)
     error = fun_error(vectorized_factors) / tl.norm(initial_tensor, 2)
     assert_(error < tol_norm_2,
             f'norm 2 of reconstruction higher = {error} than tolerance={tol_norm_2}')
@@ -140,7 +143,7 @@ def test_generalized_parafac(monkeypatch):
     tensor = tl.tensor(array)
     _, factors = generalized_parafac(tensor, loss=loss, rank=rank, init=init)
     vectorized_factors = vectorize_factors(factors)
-    fun_error = loss_operator(initial_tensor, rank, loss)
+    fun_error = loss_operator_func(initial_tensor, rank, loss)
     error = fun_error(vectorized_factors) / tl.norm(initial_tensor, 2)
     assert_(error < tol_norm_2,
             f'norm 2 of reconstruction higher = {error} than tolerance={tol_norm_2}')

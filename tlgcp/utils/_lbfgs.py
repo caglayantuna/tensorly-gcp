@@ -9,16 +9,16 @@ def lbfgs(loss, x0, gradient=None, n_iter_max=100, non_negative=False, norm=1.0)
 
     Parameters
     ----------
-    loss: callable
-    x0: 1d ndarray
-    gradient: callable
-        Default: None
-    n_iter_max: int
-        Default: 100
-    non_negative: bool
-        Default: False
-    norm: float
-        Default
+    loss : callable
+    x0 : 1d ndarray
+    gradient : callable
+        Default : None
+    n_iter_max : int
+        Default : 100
+    non_negative : bool
+        Default : False
+    norm : float
+        Default : 1.0
 
     Returns
     ----------

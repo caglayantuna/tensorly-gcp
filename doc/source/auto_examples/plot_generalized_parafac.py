@@ -38,12 +38,9 @@ import numpy as np
 import tensorly as tl
 from tensorly.decomposition import non_negative_parafac_hals
 from tlgcp import generalized_parafac, stochastic_generalized_parafac
-import matplotlib.pyplot as plt
 from tensorly.metrics import RMSE
 from tlgcp.utils import loss_operator
 import time
-
-np.set_printoptions(precision=2)
 
 ##############################################################################
 # Example with Bernoulli loss
@@ -74,7 +71,7 @@ tensor = tl.tensor(array, dtype='float')
 # GCP
 tic = time.time()
 tensor_gcp, errors_gcp = generalized_parafac(tensor, rank=rank, init=init, return_errors=True, loss=loss, n_iter_max=500)
-cp_reconstruction_gcp = tl.cp_to_tensor((tensor_gcp))
+cp_reconstruction_gcp = tl.cp_to_tensor(tensor_gcp)
 time_gcp = time.time() - tic
 
 ##############################################################################
@@ -110,17 +107,17 @@ time_cp = time.time() - tic
 # without calculating it.
 
 
-print("RMSE for GCP:", RMSE(cp_tensor, cp_reconstruction_gcp))
-print("RMSE for SGCP:", RMSE(cp_tensor, cp_reconstruction_sgcp))
-print("RMSE for NN-CP:", RMSE(cp_tensor, cp_reconstruction))
+print("RMSE for GCP:", "%.2f" % RMSE(cp_tensor, cp_reconstruction_gcp))
+print("RMSE for SGCP:", "%.2f" %RMSE(cp_tensor, cp_reconstruction_sgcp))
+print("RMSE for NN-CP:", "%.2f" %RMSE(cp_tensor, cp_reconstruction))
 
-print("Loss for GCP:", tl.sum(loss_operator(cp_tensor, cp_reconstruction_gcp, loss)))
-print("Loss for SGCP:", tl.sum(loss_operator(cp_tensor, cp_reconstruction_sgcp, loss)))
-print("Loss for NN-CP:", tl.sum(loss_operator(cp_tensor, cp_reconstruction, loss)))
+print("Loss for GCP:", "%.2f" %tl.sum(loss_operator(cp_tensor, cp_reconstruction_gcp, loss)))
+print("Loss for SGCP:", "%.2f" %tl.sum(loss_operator(cp_tensor, cp_reconstruction_sgcp, loss)))
+print("Loss for NN-CP:", "%.2f" %tl.sum(loss_operator(cp_tensor, cp_reconstruction, loss)))
 
-print("GCP time:", time_gcp)
-print("SGCP time:", time_sgcp)
-print("NN-CP time:", time_cp)
+print("GCP time:", "%.2f" %time_gcp)
+print("SGCP time:", "%.2f" %time_sgcp)
+print("NN-CP time:", "%.2f" %time_cp)
 
 ##############################################################################
 # We compare the results according to processing time, root mean square error and
