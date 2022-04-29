@@ -31,7 +31,7 @@ def test_vectorize_factors():
     rank = 3
     weights, factors = random_cp(shape, rank)
     vec_factors = vectorize_factors(factors)
-    assert_(len(vec_factors) == tl.sum(shape*rank))
+    assert_(len(vec_factors) == tl.sum(tl.tensor(shape)) * rank)
 
 
 def test_vectorized_factors_to_tensor():
@@ -55,7 +55,7 @@ def test_vectorized_mttkrp():
     vec_factors = vectorize_factors(factors)
     tensor = tl.cp_to_tensor((weights, factors))
     vec_mttkrp = vectorized_mttkrp(tensor, vec_factors, rank)
-    assert_(len(vec_mttkrp) == tl.sum(shape*rank))
+    assert_(tl.shape(vec_mttkrp) == tl.shape(vec_factors))
 
 
 def test_generalized_parafac(monkeypatch):

@@ -20,6 +20,27 @@ Examples of tensor usage.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Generalized Parafac with missing values">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_masking_rainfall_data_thumb.png
+     :alt: Generalized Parafac with missing values
+
+     :ref:`sphx_glr_auto_examples_plot_masking_rainfall_data.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_masking_rainfall_data
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Generalized Parafac in Tensorly">
 
 .. only:: html

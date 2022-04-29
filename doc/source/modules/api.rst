@@ -49,6 +49,16 @@ Available functions
 
     stochastic_gradient
 
+.. automodule:: tlgcp.data.tensor_dataset
+    :no-members:
+    :no-inherited-members:
+
+.. autosummary::
+    :toctree: generated
+    :template: function.rst
+
+    get_tensor
+
 Decompositions
 -------------------
 .. automodule:: tlgcp.generalized_parafac

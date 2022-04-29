@@ -54,16 +54,15 @@ config = {
     'author': 'Caglayan Tuna',
     'author_email': '', # TODO
     'version': VERSION,
-    #'url': 'https://github.com/tensorly/tensorly-torch',
-    #'download_url': 'https://github.com/tensorly/tensorly-torch/tarball/' + VERSION,
     'install_requires': ['numpy', 'scipy', 'tensorly'],
     'license': 'Modified BSD',
     'scripts': [],
     'classifiers': [
         'Topic :: Scientific/Engineering',
         'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 3'
-    ],
+        'Programming Language :: Python :: 3'],
+    'include_package_data': True,
+    'package_data': {'': ['./data/*.csv']},
 }
 
 setup(**config)
