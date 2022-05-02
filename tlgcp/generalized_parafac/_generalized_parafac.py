@@ -8,7 +8,7 @@ from ..utils import lbfgs
 
 def vectorize_factors(factors):
     """
-    Vectorizes each factor, then concatenates them to return one vector.
+    Vectorizes each factor in factors, then concatenates them to return one vector.
 
     Parameters
     ----------
@@ -98,7 +98,7 @@ def loss_operator_func(tensor, rank, loss):
 
     Returns
     -------
-    function to calculate loss
+    function to compute loss
          Size based normalized loss for each entry
 
     References
@@ -131,8 +131,7 @@ def loss_operator_func(tensor, rank, loss):
 
 def gradient_operator_func(tensor, rank, loss):
     """
-    Operator to use loss functions from [1] in order to compute gradient for
-    generalized parafac decomposition.
+    Return gradients map for various loss [1] in generalized parafac decomposition.
 
     Parameters
     ----------
@@ -142,7 +141,7 @@ def gradient_operator_func(tensor, rank, loss):
 
     Returns
     -------
-    function to calculate gradient
+    function to compute gradient
          Size based normalized loss for each entry
     References
     ----------
@@ -249,9 +248,12 @@ def initialize_generalized_parafac(tensor, rank, init='random', svd='numpy_svd',
 
 def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_svd',
                         random_state=None, return_errors=False, loss='gaussian', fun_loss=None, fun_gradient=None):
-    """ Generalized PARAFAC decomposition by using LBFGS optimization
+    """ Generalized PARAFAC decomposition by using LBFGS optimization.
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
-        tensor = [|weights; factors[0], ..., factors[-1] |].
+        tensor ~ D([|weights; factors[0], ..., factors[-1] |]) 
+    where D is a parametric distribution such as Gaussian, Poisson, Rayleigh, Gamma or Bernoulli.
+
+    Generalized parafac essentially performs the same kind of decomposition as the parafac function, but using a more diverse set of user-chosen loss functions. Under the hood, it relies on the LBFGS optimizer as implemented in the backend (currently only numpy).
 
     Parameters
     ----------
@@ -322,9 +324,15 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
 
 
 class GCP(DecompositionMixin):
-    """ Generalized PARAFAC decomposition by using Fista optimization
+    """ 
+    TODO specific doc for class??
+
+    Generalized PARAFAC decomposition by using LBFGS optimization.
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
-        tensor = [|weights; factors[0], ..., factors[-1] |].
+        tensor ~ D([|weights; factors[0], ..., factors[-1] |]) 
+    where D is a parametric distribution such as Gaussian, Poisson, Rayleigh, Gamma or Bernoulli.
+
+    Generalized parafac essentially performs the same kind of decomposition as the parafac function, but using a more diverse set of user-chosen loss functions. Under the hood, it relies on the LBFGS optimizer as implemented in the backend (currently only numpy).
 
     Parameters
     ----------
