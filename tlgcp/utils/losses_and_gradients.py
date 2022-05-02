@@ -4,8 +4,7 @@ import math
 
 def loss_operator(tensor, estimated_tensor, loss, mask=None):
     """
-    Operator to use loss functions from [1] in order to compute loss for
-    generalized parafac decomposition.
+    Returns loss for various loss [1] in generalized parafac decomposition.
 
     Parameters
     ----------
@@ -52,8 +51,7 @@ def loss_operator(tensor, estimated_tensor, loss, mask=None):
 
 def gradient_operator(tensor, estimated_tensor, loss, mask=None):
     """
-    Operator to use loss functions from [1] in order to compute gradient for
-    generalized parafac decomposition.
+    Returns gradients for various loss [1] in generalized parafac decomposition.
 
     Parameters
     ----------

@@ -9,7 +9,7 @@ from ..utils import loss_operator, gradient_operator
 
 def stochastic_gradient(tensor, factors, batch_size, loss='gaussian', random_state=None, mask=None):
     """
-    Computes stochastic gradient between given tensor and estimated factors according to the given loss and batch size.
+    Computes stochastic gradient according to the given loss and batch size.
 
     Parameters
     ----------
@@ -65,7 +65,10 @@ def stochastic_generalized_parafac(tensor, rank, n_iter_max=1000, init='random',
                                    mask=None, random_state=None):
     """ Generalized PARAFAC decomposition by using ADAM optimization
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
-        tensor = [|weights; factors[0], ..., factors[-1] |].
+        tensor ~ D([|weights; factors[0], ..., factors[-1] |]) 
+    where D is a parametric distribution such as Gaussian, Poisson, Rayleigh, Gamma or Bernoulli.
+
+    Generalized parafac essentially performs the same kind of decomposition as the parafac function, but using a more diverse set of user-chosen loss functions. Under the hood, it relies on stochastic optimization using a home-made implementation of ADAM.
 
     Parameters
     ----------
@@ -155,7 +158,7 @@ def stochastic_generalized_parafac(tensor, rank, n_iter_max=1000, init='random',
                     factors[mode] = tl.clip(factors[mode], 0)
 
             t_iter += 1
-        # Calculate the current error
+        # Compute the current error
         current_loss = loss_operator(tensor[indices_tuple],
                                      tl.sum(sample_khatri_rao(factors, indices_list=indices_tuple, n_samples=batch_size)[0],
                                      axis=1), loss=loss, mask=mask)
