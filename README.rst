@@ -1,8 +1,8 @@
 TensorLy-Gcp  
 ===============================================  
-TensorLy-Gcp is a Python library for generalized parafac decomposition (GCP) [1] and its stochastic version (SGCP) [2] which allow using different kind of losses rather than only Euclidean  that builds on top of `TensorLy <http://tensorly.org/dev/installation.html>`_. Both algorithms aim at decreasing loss between the input tensor and estimated tensor by using gradient which is calculated according to the selected loss by the user.
+TensorLy-Gcp is a Python library for fitting generalized parafac decomposition (GCP) [1] and its stochastic version (SGCP) [2] which allows using different losses rather than only Euclidean. Tensorly-Gcp builds on top of `TensorLy <http://tensorly.org/dev/installation.html>`_. Both GCP and SGCP algorithms fit generalized parafac given an input tensor using a gradient-based algorithm. Gradients are computed according to a loss selected by the user, and may be provided by the user, allowing customization. While GCP implementation uses Limited-memory BFGS (LBFGS) method for optimization, SGCP uses ADAM optimization as in [2]. 
 
-While GCP implementation uses Limited-memory BFGS (LBFGS) method for optimization, SGCP uses ADAM optimization as in [2]. Following losses can be used in Tensorly-Gcp:
+The following losses are implemented in Tensorly-Gcp:
 
 - Rayleigh
 - Bernoulli odds
@@ -14,11 +14,11 @@ While GCP implementation uses Limited-memory BFGS (LBFGS) method for optimizatio
 
 Contributing
 ============
-At the moment, only Numpy backend is supported to implement GCP and SGCP. This library can be compatible with other backends (Pytorch, Tensorflow, Jax, Mxnet) by improving LBFGS with the given information in `here <https://github.com/caglayantuna/tensorly-gcp/blob/master/tlgcp/utils/_lbfgs.py>`_. Then, this library can be merged in TensorLy.
+At the moment, only Numpy backend is supported to implement GCP and SGCP. This library can be compatible with other backends (Pytorch, Tensorflow, Jax, Mxnet) by improving LBFGS with the given information in `here <https://github.com/caglayantuna/tensorly-gcp/blob/master/tlgcp/utils/_lbfgs.py>`_. Then, it could eventually be merged in TensorLy.
 
 Usage
 ============
-It is possible select one of the losses from the list above according to your data distribution and you can apply generalized decomposition easily:
+It is possible select one of the losses from the list above and fit generalized decomposition easily:
 
 .. code:: python
     
