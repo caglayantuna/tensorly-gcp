@@ -51,6 +51,6 @@ From source
 References  
 ----------  
   
-.. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020). Generalized canonical polyadic tensor decomposition. SIAM Review, 62(1), 133-163. `Link <https://arxiv.org/abs/1808.07452>`_  
+.. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020). Generalized canonical polyadic tensor decomposition. SIAM Review, 62(1), 133-163. `Link-1 <https://arxiv.org/abs/1808.07452>`_  
   
-.. [2] Kolda, T. G., & Hong, D. (2020). Stochastic gradients for large-scale tensor decomposition. SIAM Journal on Mathematics of Data Science, 2(4), 1066-1095. `Link <https://arxiv.org/abs/1906.01687>`_
+.. [2] Kolda, T. G., & Hong, D. (2020). Stochastic gradients for large-scale tensor decomposition. SIAM Journal on Mathematics of Data Science, 2(4), 1066-1095. `Link-2 <https://arxiv.org/abs/1906.01687>`_
