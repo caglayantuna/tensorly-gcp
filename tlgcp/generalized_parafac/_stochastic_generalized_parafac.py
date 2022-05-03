@@ -63,12 +63,16 @@ def stochastic_gradient(tensor, factors, batch_size, loss='gaussian', random_sta
 def stochastic_generalized_parafac(tensor, rank, n_iter_max=1000, init='random', return_errors=False,
                                    loss='gaussian', epochs=20, batch_size=200, lr=0.01, beta_1=0.9, beta_2=0.999,
                                    mask=None, random_state=None):
-    """ Generalized PARAFAC decomposition by using ADAM optimization
+    """ Generalized PARAFAC decomposition by using ADAM optimization.
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
+
         tensor ~ D([|weights; factors[0], ..., factors[-1] |]) 
+
     where D is a parametric distribution such as Gaussian, Poisson, Rayleigh, Gamma or Bernoulli.
 
-    Generalized parafac essentially performs the same kind of decomposition as the parafac function, but using a more diverse set of user-chosen loss functions. Under the hood, it relies on stochastic optimization using a home-made implementation of ADAM.
+    Generalized parafac essentially performs the same kind of decomposition as the parafac function,
+    but using a more diverse set of user-chosen loss functions. Under the hood, it relies on stochastic
+    optimization using a home-made implementation of ADAM.
 
     Parameters
     ----------
@@ -101,6 +105,7 @@ def stochastic_generalized_parafac(tensor, rank, n_iter_max=1000, init='random',
         array of booleans with the same shape as ``tensor`` should be 0 where
         the values are missing and 1 everywhere else.
     random_state : {None, int, np.random.RandomState}
+
     Returns
     -------
     CPTensor : (weight, factors)
@@ -110,6 +115,7 @@ def stochastic_generalized_parafac(tensor, rank, n_iter_max=1000, init='random',
         * factors : List of factors of the CP decomposition element `i` is of shape ``(tensor.shape[i], rank)``
     errors : list
         A list of reconstruction errors at each iteration of the algorithms.
+
     References
     ----------
     .. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).
@@ -187,9 +193,10 @@ def stochastic_generalized_parafac(tensor, rank, n_iter_max=1000, init='random',
 
 
 class Stochastic_GCP(DecompositionMixin):
-    """ Stochastic Generalized PARAFAC decomposition by using ADAM optimization
+    """ Stochastic Generalized PARAFAC decomposition by using ADAM optimization.
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
-        tensor = [|weights; factors[0], ..., factors[-1] |].
+
+        tensor ~ [|weights; factors[0], ..., factors[-1] |].
 
     Parameters
     ----------
@@ -209,6 +216,7 @@ class Stochastic_GCP(DecompositionMixin):
     return_errors : bool, optional
         Activate return of iteration errors
     loss : {'gaussian', 'bernoulli_odds', 'bernoulli_logit', 'rayleigh', 'poisson_count', 'poisson_log', 'gamma'}
+
     Returns
     -------
     CPTensor : (weight, factors)
@@ -219,6 +227,7 @@ class Stochastic_GCP(DecompositionMixin):
         * sparse_component : nD array of shape tensor.shape. Returns only if `sparsity` is not None.
     errors : list
         A list of reconstruction errors at each iteration of the algorithms.
+
     References
     ----------
     .. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).
@@ -244,10 +253,12 @@ class Stochastic_GCP(DecompositionMixin):
 
     def fit_transform(self, tensor):
         """Decompose an input tensor
+
         Parameters
         ----------
         tensor : tensorly tensor
             input tensor to decompose
+
         Returns
         -------
         CPTensor

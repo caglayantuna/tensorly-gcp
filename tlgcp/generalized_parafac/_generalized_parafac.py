@@ -25,15 +25,18 @@ def vectorize_factors(factors):
     return vectorized_factors
 
 
-def vectorized_factors_to_tensor(vectorized_factors, shape, rank, return_factors=False):
+def vectorized_factors_to_tensor(vectorized_factors, shape, rank, mask=None, return_factors=False):
     """
     Transforms vectorized factors of a CP decomposition into a reconstructed full tensor.
 
     Parameters
     ----------
-    vectorized_factors : 1darray, a vector of length :math:`\prod(shape) \times rank^\{\len(shape)\}`
+    vectorized_factors : 1darray, a vector of length :math:`\prod(shape) * rank^{len(shape)}`
     shape : tuple, contains the row dimensions of the factors
     rank : int, number of components in the CP decomposition
+    mask : ndarray
+        array of booleans with the same shape as ``tensor`` should be 0 where
+        the values are missing and 1 everywhere else.
     return_factors : bool, if True returns factors list instead of full tensor 
         Default: False
 
@@ -53,12 +56,16 @@ def vectorized_factors_to_tensor(vectorized_factors, shape, rank, return_factors
     if return_factors:
         return CPTensor((None, factors))
     else:
-        return tl.cp_to_tensor((None, factors))
+        if mask is not None:
+            return tl.cp_to_tensor((None, factors)) * mask
+        else:
+            return tl.cp_to_tensor((None, factors))
 
 
 def vectorized_mttkrp(tensor, vectorized_factors, rank):
     """
-    Computes the Matricized Tensor Times Khatri-Rao Product (MTTKRP) for all modes between a tensor and vectorized factors. Returns a vectorized stack of MTTKRPs.
+    Computes the Matricized Tensor Times Khatri-Rao Product (MTTKRP) for
+    all modes between a tensor and vectorized factors. Returns a vectorized stack of MTTKRPs.
 
     Parameters
     ----------
@@ -78,28 +85,31 @@ def vectorized_mttkrp(tensor, vectorized_factors, rank):
     return tl.concatenate(all_mttkrp, axis=0)
 
 
-def loss_operator_func(tensor, rank, loss):
+def loss_operator_func(tensor, rank, loss, mask=None):
     """
     Various loss functions for generalized parafac decomposition, see [1] for more details.
-    The returned function maps a vectorized factors input x to the loss (todo maths)
-    1/len(x)*L(T,x)
+    The returned function maps a vectorized factors input x to the loss :math:`1/len(x) * L(T,x)`
     where L is the maximum likelihood estimator when tensor is generated from x using one of the following distributions:
-    - Gaussian
-    - Gamma
-    - Rayleigh
-    - Poisson (count or log)
-    - Bernoulli (odds or log)
+
+    * Gaussian
+    * Gamma
+    * Rayleigh
+    * Poisson (count or log)
+    * Bernoulli (odds or log)
 
     Parameters
     ----------
     tensor : ndarray, input tensor data
-    rank : int, rank of
+    rank : int, number of components in the CP decomposition
     loss : string, choices are {'gaussian', 'gamma', 'rayleigh', 'poisson_count', 'poisson_log', 'bernoulli_odds', 'bernoulli_log'}
+    mask : ndarray
+        array of booleans with the same shape as ``tensor`` should be 0 where
+        the values are missing and 1 everywhere else.
 
     Returns
     -------
     function to compute loss
-         Size based normalized loss for each entry
+        Size based normalized loss for each entry
 
     References
     ----------
@@ -109,40 +119,49 @@ def loss_operator_func(tensor, rank, loss):
     shape = tl.shape(tensor)
     size = tl.prod(tl.tensor(shape, **tl.context(tensor)))
     epsilon = 1e-8
-    # should we not create the reconstructed tensor here in advance? we sometimes recreate it twice in the losses, this seens like a waste of time?
-    # rec_tensor = vectorized_factors_to_tensor(x,shape,rank)
+
     if loss == 'gaussian':
-        return lambda x: tl.sum((tensor - vectorized_factors_to_tensor(x, shape, rank)) ** 2) / size
+        return lambda x: tl.sum((tensor - vectorized_factors_to_tensor(x, shape, rank, mask)) ** 2) / size
     elif loss == 'bernoulli_odds':
-        return lambda x: tl.sum(tl.log(vectorized_factors_to_tensor(x, shape, rank) + 1) - (tensor * tl.log(vectorized_factors_to_tensor(x, shape, rank) + epsilon))) / size
+        return lambda x: tl.sum(tl.log(vectorized_factors_to_tensor(x, shape, rank, mask) + 1) -
+                            (tensor * tl.log(vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon))) / size
     elif loss == 'bernoulli_logit':
-        return lambda x: tl.sum(tl.log(tl.exp(vectorized_factors_to_tensor(x, shape, rank)) + 1) - (tensor * vectorized_factors_to_tensor(x, shape, rank))) / size
+        return lambda x: tl.sum(tl.log(tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask)) + 1) -
+                                (tensor * vectorized_factors_to_tensor(x, shape, rank, mask, mask))) / size
     elif loss == 'rayleigh':
-        return lambda x: tl.sum(2 * tl.log(vectorized_factors_to_tensor(x, shape, rank) + epsilon) + (math.pi / 4) * ((tensor / (vectorized_factors_to_tensor(x, shape, rank) + epsilon)) ** 2)) / size
+        return lambda x: tl.sum(2 * tl.log(vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon) + (math.pi / 4) *
+                                ((tensor / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)) ** 2)) / size
     elif loss == 'poisson_count':
-        return lambda x: tl.sum(vectorized_factors_to_tensor(x, shape, rank) - tensor * tl.log(vectorized_factors_to_tensor(x, shape, rank) + epsilon)) / size
+        return lambda x: tl.sum(vectorized_factors_to_tensor(x, shape, rank, mask) - tensor *
+                                tl.log(vectorized_factors_to_tensor(x, shape, rank) + epsilon)) / size
     elif loss == 'poisson_log':
-        return lambda x: tl.sum(tl.exp(vectorized_factors_to_tensor(x, shape, rank)) - (tensor * vectorized_factors_to_tensor(x, shape, rank))) / size
+        return lambda x: tl.sum(tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask)) -
+                                (tensor * vectorized_factors_to_tensor(x, shape, rank, mask))) / size
     elif loss == 'gamma':
-        return lambda x: tl.sum(tensor / (vectorized_factors_to_tensor(x, shape, rank) + epsilon) + tl.log(vectorized_factors_to_tensor(x, shape, rank) + epsilon)) / size
+        return lambda x: tl.sum(tensor / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon) +
+                                tl.log(vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)) / size
     else:
         raise ValueError('Loss "{}" not recognized'.format(loss))
 
 
-def gradient_operator_func(tensor, rank, loss):
+def gradient_operator_func(tensor, rank, loss, mask=None):
     """
     Return gradients map for various loss [1] in generalized parafac decomposition.
 
     Parameters
     ----------
     tensor : ndarray
-    rank : int, rank of
+    rank : int, number of components in the CP decomposition
     loss : {'gaussian', 'gamma', 'rayleigh', 'poisson_count', 'poisson_log', 'bernoulli_odds', 'bernoulli_log'}
+    mask : ndarray
+        array of booleans with the same shape as ``tensor`` should be 0 where
+        the values are missing and 1 everywhere else.
 
     Returns
     -------
     function to compute gradient
          Size based normalized loss for each entry
+
     References
     ----------
     .. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).
@@ -152,19 +171,29 @@ def gradient_operator_func(tensor, rank, loss):
     size = tl.prod(tl.tensor(shape, **tl.context(tensor)))
     epsilon = 1e-8
     if loss == 'gaussian':
-        return lambda x: vectorized_mttkrp(2 * (vectorized_factors_to_tensor(x, shape, rank) - tensor), x, rank) / size
+        return lambda x: vectorized_mttkrp(2 * (vectorized_factors_to_tensor(x, shape, rank, mask) - tensor), x, rank) \
+                         / size
     elif loss == 'bernoulli_odds':
-        return lambda x: vectorized_mttkrp(1 / (vectorized_factors_to_tensor(x, shape, rank) + 1) - (tensor / (vectorized_factors_to_tensor(x, shape, rank) + epsilon)), x, rank) / size
+        return lambda x: vectorized_mttkrp(1 / (vectorized_factors_to_tensor(x, shape, rank, mask) + 1)
+                                           - (tensor / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)),
+                                           x, rank) / size
     elif loss == 'bernoulli_logit':
-        return lambda x: vectorized_mttkrp(tl.exp(vectorized_factors_to_tensor(x, shape, rank)) / (tl.exp(vectorized_factors_to_tensor(x, shape, rank)) + 1) - tensor, x, rank) / size
+        return lambda x: vectorized_mttkrp(tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask)) /
+                                           (tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask)) + 1) - tensor, x,
+                                           rank) / size
     elif loss == 'rayleigh':
-        return lambda x: vectorized_mttkrp(2 / (vectorized_factors_to_tensor(x, shape, rank) + epsilon) - (math.pi / 2) * (tensor ** 2) / ((vectorized_factors_to_tensor(x, shape, rank) + epsilon) ** 3), x, rank) / size
+        return lambda x: vectorized_mttkrp(2 / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)
+                                           - (math.pi / 2) * (tensor ** 2) /
+                                           ((vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon) ** 3), x, rank) / size
     elif loss == 'poisson_count':
-        return lambda x: vectorized_mttkrp(1 - tensor / (vectorized_factors_to_tensor(x, shape, rank) + epsilon), x, rank) / size
+        return lambda x: vectorized_mttkrp(1 - tensor /
+                                           (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon), x, rank) / size
     elif loss == 'poisson_log':
-        return lambda x: vectorized_mttkrp(tl.exp(vectorized_factors_to_tensor(x, shape, rank)) - tensor, x, rank) / size
+        return lambda x: vectorized_mttkrp(tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask))
+                                           - tensor, x, rank) / size
     elif loss == 'gamma':
-        return lambda x: vectorized_mttkrp(-tensor / ((vectorized_factors_to_tensor(x, shape, rank) + epsilon) ** 2) + (1 / (vectorized_factors_to_tensor(x, shape, rank) + epsilon)), x, rank) / size
+        return lambda x: vectorized_mttkrp(-tensor / ((vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon) ** 2) \
+                                           + (1 / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)), x, rank) / size
     else:
         raise ValueError('Loss "{}" not recognized'.format(loss))
 
@@ -183,7 +212,7 @@ def initialize_generalized_parafac(tensor, rank, init='random', svd='numpy_svd',
     Parameters
     ----------
     tensor : ndarray
-    rank : int
+    rank : int, number of components in the CP decomposition
     init : {'svd', 'random', cptensor}, optional
     svd : str, default is 'numpy_svd'
         function to use to compute the SVD, acceptable values in tensorly.SVD_FUNS
@@ -246,14 +275,18 @@ def initialize_generalized_parafac(tensor, rank, init='random', svd='numpy_svd',
     return kt
 
 
-def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_svd',
+def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_svd', mask=None,
                         random_state=None, return_errors=False, loss='gaussian', fun_loss=None, fun_gradient=None):
     """ Generalized PARAFAC decomposition by using LBFGS optimization.
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
-        tensor ~ D([|weights; factors[0], ..., factors[-1] |]) 
+
+        tensor ~ D([|weights; factors[0], ..., factors[-1] |])
+
     where D is a parametric distribution such as Gaussian, Poisson, Rayleigh, Gamma or Bernoulli.
 
-    Generalized parafac essentially performs the same kind of decomposition as the parafac function, but using a more diverse set of user-chosen loss functions. Under the hood, it relies on the LBFGS optimizer as implemented in the backend (currently only numpy).
+    Generalized parafac essentially performs the same kind of decomposition as the parafac function, but using a more
+    diverse set of user-chosen loss functions. Under the hood, it relies on the LBFGS optimizer as implemented in the
+    backend (currently only numpy).
 
     Parameters
     ----------
@@ -268,6 +301,9 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
         See `initialize_factors`.
     svd : str, default is 'numpy_svd'
         function to use to compute the SVD, acceptable values in tensorly.SVD_FUNS
+    mask : ndarray
+        array of booleans with the same shape as ``tensor`` should be 0 where
+        the values are missing and 1 everywhere else.
     random_state : {None, int, np.random.RandomState}
     return_errors : bool, optional
         Activate return of iteration errors
@@ -287,6 +323,7 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
         * factors : List of factors of the CP decomposition element `i` is of shape ``(tensor.shape[i], rank)``
     errors : list
         A list of reconstruction errors at each iteration of the algorithms.
+
     References
     ----------
     .. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).
@@ -309,8 +346,8 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
         non_negative = False
 
     if loss is not None:
-        fun_loss = loss_operator_func(tensor, rank, loss=loss)
-        fun_gradient = gradient_operator_func(tensor, rank, loss=loss)
+        fun_loss = loss_operator_func(tensor, rank, loss=loss, mask=mask)
+        fun_gradient = gradient_operator_func(tensor, rank, loss=loss, mask=mask)
 
     vectorized_factors, rec_errors = lbfgs(fun_loss, vectorized_factors, fun_gradient, n_iter_max=n_iter_max,
                                            non_negative=non_negative, norm=norm)
@@ -324,15 +361,17 @@ def generalized_parafac(tensor, rank, n_iter_max=100, init='random', svd='numpy_
 
 
 class GCP(DecompositionMixin):
-    """ 
-    TODO specific doc for class??
-
+    """
     Generalized PARAFAC decomposition by using LBFGS optimization.
     Computes a rank-`rank` decomposition of `tensor` [1]_ such that::
-        tensor ~ D([|weights; factors[0], ..., factors[-1] |]) 
+
+        tensor ~ D([|weights; factors[0], ..., factors[-1] |])
+
     where D is a parametric distribution such as Gaussian, Poisson, Rayleigh, Gamma or Bernoulli.
 
-    Generalized parafac essentially performs the same kind of decomposition as the parafac function, but using a more diverse set of user-chosen loss functions. Under the hood, it relies on the LBFGS optimizer as implemented in the backend (currently only numpy).
+    Generalized parafac essentially performs the same kind of decomposition as the parafac function,
+    but using a more diverse set of user-chosen loss functions. Under the hood, it relies on the LBFGS
+    optimizer as implemented in the backend (currently only numpy).
 
     Parameters
     ----------
@@ -375,6 +414,7 @@ class GCP(DecompositionMixin):
         * sparse_component : nD array of shape tensor.shape. Returns only if `sparsity` is not None.
     errors : list
         A list of reconstruction errors at each iteration of the algorithms.
+
     References
     ----------
     .. [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).
@@ -383,12 +423,13 @@ class GCP(DecompositionMixin):
            SIAM Journal on Mathematics of Data Science, 2(4), 1066-1095.
     """
 
-    def __init__(self, rank, n_iter_max=100, init='svd', svd='numpy_svd', loss='gaussian',
+    def __init__(self, rank, n_iter_max=100, init='svd', svd='numpy_svd', mask=None, loss='gaussian',
                  random_state=None, return_errors=True, fun_loss=None, fun_gradient=None):
         self.rank = rank
         self.n_iter_max = n_iter_max
         self.init = init
         self.svd = svd
+        self.mask = mask
         self.return_errors = return_errors
         self.loss = loss
         self.random_state = random_state
@@ -397,10 +438,12 @@ class GCP(DecompositionMixin):
 
     def fit_transform(self, tensor):
         """Decompose an input tensor
+
         Parameters
         ----------
         tensor : tensorly tensor
             input tensor to decompose
+
         Returns
         -------
         CPTensor
@@ -412,6 +455,7 @@ class GCP(DecompositionMixin):
             n_iter_max=self.n_iter_max,
             init=self.init,
             svd=self.svd,
+            mask=self.mask,
             loss=self.loss,
             random_state=self.random_state,
             return_errors=self.return_errors,
