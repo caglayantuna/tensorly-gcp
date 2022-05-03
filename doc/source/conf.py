@@ -111,11 +111,9 @@ html_theme_options = {
     'github_url': 'https://github.com/caglayantuna/tensorly-gcp',
     'google_analytics' : 'G-QSPLEF75VT',
     'nav_links' : [('Install', 'install'),
-                   ('User Guide', 'user_guide/index'),
                    ('API', 'modules/api'),
                    ('Examples', 'auto_examples/index'),
                    ('About Us', 'about')],
-     'external_nav_links' : [('Notebooks', 'https://github.com/caglayantuna/tensorly-gcp/tree/master/tlgcp/notebooks')],
     'external_nav_links' : [('TensorLy', 'http://tensorly.org/dev')]
 }
 

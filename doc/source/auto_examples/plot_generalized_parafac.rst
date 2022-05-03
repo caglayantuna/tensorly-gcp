@@ -18,8 +18,8 @@
 .. _sphx_glr_auto_examples_plot_generalized_parafac.py:
 
 
-Generalized Parafac in Tensorly
-===============================================
+Example use of Generalized CP for integer-valued tensor
+=======================================================
 On this page, you will find examples showing how to use Generalized CP (GCP).
 
 .. GENERATED FROM PYTHON SOURCE LINES 8-36
@@ -53,7 +53,7 @@ Following table gives existing losses in Tensorly with their gradients and const
 | Gaussian       | :math:`(x - m)^2`                             | :math:`2\times(m - x)`                            |                      |
 +----------------+-----------------------------------------------+---------------------------------------------------+----------------------+
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-45
+.. GENERATED FROM PYTHON SOURCE LINES 36-54
 
 .. code-block:: default
 
@@ -62,10 +62,18 @@ Following table gives existing losses in Tensorly with their gradients and const
     import tensorly as tl
     from tensorly.decomposition import non_negative_parafac_hals
     from tlgcp import generalized_parafac, stochastic_generalized_parafac
+    import matplotlib.pyplot as plt
     from tensorly.metrics import RMSE
     from tlgcp.utils import loss_operator
     import time
 
+    def each_iteration(a, b):
+        fig=plt.figure()
+        fig.set_size_inches(10, fig.get_figheight(), forward=True)
+        plt.plot(a)
+        plt.plot(b)
+        plt.yscale('log')
+        plt.legend(['GCP', 'S-GCP'], loc='upper right')
 
 
 
@@ -73,15 +81,20 @@ Following table gives existing losses in Tensorly with their gradients and const
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-51
+
+.. GENERATED FROM PYTHON SOURCE LINES 55-64
 
 Example with Bernoulli loss
 --------------------------------------------
-To use GCP decomposition efficiently, loss should be selected according to the input tensor.
-Here, we will report an example with Bernoulli odds loss. Let us note that
-we suggest to use random init rather than svd while using GCP decomposition.
+In this example, a tensor containing integer values is decomposed in the CP
+format using Generalized CP [Hong, Kolda, Duersch 2019]. To use GCP decomposition
+efficiently, the correct loss should be selected according to the input tensor.
+Here, we use Bernoulli odds loss, which stems from the maximum likelihood
+estimator when the data is generated as a Bernoulli process (integer values)
+with low-rank CP parameters. Let us note that we suggest to use random init rather
+than Singular Value Decomposition with using GCP decomposition.
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-58
+.. GENERATED FROM PYTHON SOURCE LINES 64-71
 
 .. code-block:: default
 
@@ -99,12 +112,12 @@ we suggest to use random init rather than svd while using GCP decomposition.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-61
+.. GENERATED FROM PYTHON SOURCE LINES 72-74
 
 To create a synthetic tensor wih Bernoulli distribution, we use random cp and numpy
 binomial functions:
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-66
+.. GENERATED FROM PYTHON SOURCE LINES 74-79
 
 .. code-block:: default
 
@@ -120,13 +133,12 @@ binomial functions:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-70
+.. GENERATED FROM PYTHON SOURCE LINES 80-82
 
-GCP decomposition function requires loss as differ from
-existing tensorly decomposition functions. It should be noted that loss
-can be defined by the user.
+Running GCP is quite simple, and boils down to calling the
+`generalized_parafac` routine as follows.
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-77
+.. GENERATED FROM PYTHON SOURCE LINES 82-89
 
 .. code-block:: default
 
@@ -144,16 +156,16 @@ can be defined by the user.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-84
+.. GENERATED FROM PYTHON SOURCE LINES 90-96
 
 Stochastic GCP (SGCP) decomposition function requires learning rate (LR),
 batch size, epochs and beta parameters (for ADAM) as input in addition to GCP
-decomposition inputs. Fortunately, and beta parameters could be fixed thanks
-to the literature who works with ADAM optimization. Besides, in case of
-badly chosen LR, SGCP updates the LR by dividing LR by 10 after each failed
-iteration until reaching 20 successive bad iteration.
+decomposition inputs. Fortunately, LR and beta parameters can be fixed following
+the literature on ADAM optimization. Besides, in case of badly chosen LR,
+SGCP updates the LR by dividing LR by 10 after each failed iteration until
+reaching 20 successive bad iteration.
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-93
+.. GENERATED FROM PYTHON SOURCE LINES 96-105
 
 .. code-block:: default
 
@@ -181,12 +193,12 @@ iteration until reaching 20 successive bad iteration.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-96
+.. GENERATED FROM PYTHON SOURCE LINES 106-108
 
 To compare GCP decompositions, we choose non-negative CP with HALS (NN-CP)
-since Bernoulli odds has a non-negative constraint.
+since Bernoulli odds imply a nonnegativity constraint on the CP tensor..
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-103
+.. GENERATED FROM PYTHON SOURCE LINES 108-115
 
 .. code-block:: default
 
@@ -204,30 +216,30 @@ since Bernoulli odds has a non-negative constraint.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-108
+.. GENERATED FROM PYTHON SOURCE LINES 116-120
 
-In the example, we use binary tensor `tensor` as an input. It is possible to
-have binary result by using numpy binomial function on reconstructed cp tensors.
-Besides, we could compare the results with initial `cp_tensor` and reconstructed tensors
-without calculating it.
+In the example, we use binary tensor `tensor` as an input. It is possible
+to have binary reconstructed tensor by using numpy binomial function on the
+estimated cp tensors. Below instead we compare the estimated cp tensors with
+the true `cp_tensor` which is the main goal of GCP.
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-122
+.. GENERATED FROM PYTHON SOURCE LINES 120-134
 
 .. code-block:: default
 
 
 
     print("RMSE for GCP:", "%.2f" % RMSE(cp_tensor, cp_reconstruction_gcp))
-    print("RMSE for SGCP:", "%.2f" %RMSE(cp_tensor, cp_reconstruction_sgcp))
-    print("RMSE for NN-CP:", "%.2f" %RMSE(cp_tensor, cp_reconstruction))
+    print("RMSE for SGCP:", "%.2f" % RMSE(cp_tensor, cp_reconstruction_sgcp))
+    print("RMSE for NN-CP:", "%.2f" % RMSE(cp_tensor, cp_reconstruction))
 
-    print("Loss for GCP:", "%.2f" %tl.sum(loss_operator(cp_tensor, cp_reconstruction_gcp, loss)))
-    print("Loss for SGCP:", "%.2f" %tl.sum(loss_operator(cp_tensor, cp_reconstruction_sgcp, loss)))
-    print("Loss for NN-CP:", "%.2f" %tl.sum(loss_operator(cp_tensor, cp_reconstruction, loss)))
+    print("Loss for GCP:", "%.2f" % tl.sum(loss_operator(cp_tensor, cp_reconstruction_gcp, loss)))
+    print("Loss for SGCP:", "%.2f" % tl.sum(loss_operator(cp_tensor, cp_reconstruction_sgcp, loss)))
+    print("Loss for NN-CP:", "%.2f" % tl.sum(loss_operator(cp_tensor, cp_reconstruction, loss)))
 
-    print("GCP time:", "%.2f" %time_gcp)
-    print("SGCP time:", "%.2f" %time_sgcp)
-    print("NN-CP time:", "%.2f" %time_cp)
+    print("GCP time:", "%.2f" % time_gcp)
+    print("SGCP time:", "%.2f" % time_sgcp)
+    print("NN-CP time:", "%.2f" % time_cp)
 
 
 
@@ -239,29 +251,47 @@ without calculating it.
 
  .. code-block:: none
 
-    RMSE for GCP: 0.09
-    RMSE for SGCP: 0.14
-    RMSE for NN-CP: 0.37
-    Loss for GCP: 0.68
-    Loss for SGCP: 0.69
-    Loss for NN-CP: 0.89
-    GCP time: 1.98
-    SGCP time: 11.70
-    NN-CP time: 0.41
+    RMSE for GCP: 0.10
+    RMSE for SGCP: 0.20
+    RMSE for NN-CP: 0.40
+    Loss for GCP: 0.67
+    Loss for SGCP: 0.71
+    Loss for NN-CP: 0.92
+    GCP time: 2.65
+    SGCP time: 6.79
+    NN-CP time: 0.43
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-129
+.. GENERATED FROM PYTHON SOURCE LINES 135-140
 
 We compare the results according to processing time, root mean square error and
 the selected loss. According to the final Bernoulli loss,
 both GCP and SGCP give better results than NN-CP. Since SGCP requires many
 iteration inside each epoch, processing time is much more than the others.
-On the other hand, NN-CP is better in terms of root mean square error as it is
-expected.
+We can also compare the methods by error per iteration plot:
 
-.. GENERATED FROM PYTHON SOURCE LINES 131-145
+.. GENERATED FROM PYTHON SOURCE LINES 140-143
+
+.. code-block:: default
+
+
+    each_iteration(errors_gcp, errors_sgcp)
+
+
+
+
+.. image-sg:: /auto_examples/images/sphx_glr_plot_generalized_parafac_001.png
+   :alt: plot generalized parafac
+   :srcset: /auto_examples/images/sphx_glr_plot_generalized_parafac_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 144-158
 
 References
 ----------
@@ -269,19 +299,19 @@ References
 [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).
 Generalized canonical polyadic tensor decomposition.
 SIAM Review, 62(1), 133-163.
-`(Online version)
+`(Link 1)
 <https://arxiv.org/abs/1808.07452>`_
 
 [2] Kolda, T. G., & Hong, D. (2020). Stochastic gradients for
 large-scale tensor decomposition.
 SIAM Journal on Mathematics of Data Science, 2(4), 1066-1095.
-`(Online version)
+`(Link 2)
 <https://arxiv.org/abs/1906.01687>`_
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  14.141 seconds)
+   **Total running time of the script:** ( 0 minutes  10.152 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_generalized_parafac.py:

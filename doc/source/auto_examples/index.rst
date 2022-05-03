@@ -14,7 +14,7 @@ Gallery of examples
 General examples
 ----------------
 
-Examples of tensor usage.
+Examples of GCP
 
 
 
@@ -41,12 +41,33 @@ Examples of tensor usage.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Generalized Parafac in Tensorly">
+    <div class="sphx-glr-thumbcontainer" tooltip="How to use custom loss and gradient function">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_plot_using_your_own_loss_thumb.png
+     :alt: How to use custom loss and gradient function
+
+     :ref:`sphx_glr_auto_examples_plot_using_your_own_loss.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_using_your_own_loss
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example use of Generalized CP for integer-valued tensor">
 
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_plot_generalized_parafac_thumb.png
-     :alt: Generalized Parafac in Tensorly
+     :alt: Example use of Generalized CP for integer-valued tensor
 
      :ref:`sphx_glr_auto_examples_plot_generalized_parafac.py`
 

@@ -8,4 +8,4 @@ Gallery of examples
 General examples
 ----------------
 
-Examples of tensor usage.
+Examples of GCP

@@ -1,6 +1,6 @@
 """
-Generalized Parafac in Tensorly
-===============================================
+Example use of Generalized CP for integer-valued tensor
+=======================================================
 On this page, you will find examples showing how to use Generalized CP (GCP).
 """
 
@@ -38,16 +38,29 @@ import numpy as np
 import tensorly as tl
 from tensorly.decomposition import non_negative_parafac_hals
 from tlgcp import generalized_parafac, stochastic_generalized_parafac
+import matplotlib.pyplot as plt
 from tensorly.metrics import RMSE
 from tlgcp.utils import loss_operator
 import time
 
+def each_iteration(a, b):
+    fig=plt.figure()
+    fig.set_size_inches(10, fig.get_figheight(), forward=True)
+    plt.plot(a)
+    plt.plot(b)
+    plt.yscale('log')
+    plt.legend(['GCP', 'S-GCP'], loc='upper right')
+
 ##############################################################################
 # Example with Bernoulli loss
 # --------------------------------------------
-# To use GCP decomposition efficiently, loss should be selected according to the input tensor.
-# Here, we will report an example with Bernoulli odds loss. Let us note that
-# we suggest to use random init rather than svd while using GCP decomposition.
+# In this example, a tensor containing integer values is decomposed in the CP
+# format using Generalized CP [Hong, Kolda, Duersch 2019]. To use GCP decomposition
+# efficiently, the correct loss should be selected according to the input tensor.
+# Here, we use Bernoulli odds loss, which stems from the maximum likelihood
+# estimator when the data is generated as a Bernoulli process (integer values)
+# with low-rank CP parameters. Let us note that we suggest to use random init rather
+# than Singular Value Decomposition with using GCP decomposition.
 
 # Parameters
 init = 'random'
@@ -64,9 +77,8 @@ array = np.random.binomial(1, cp_tensor / (cp_tensor + 1), size=shape)
 tensor = tl.tensor(array, dtype='float')
 
 ##############################################################################
-# GCP decomposition function requires loss as differ from
-# existing tensorly decomposition functions. It should be noted that loss
-# can be defined by the user.
+# Running GCP is quite simple, and boils down to calling the
+# `generalized_parafac` routine as follows.
 
 # GCP
 tic = time.time()
@@ -77,10 +89,10 @@ time_gcp = time.time() - tic
 ##############################################################################
 # Stochastic GCP (SGCP) decomposition function requires learning rate (LR),
 # batch size, epochs and beta parameters (for ADAM) as input in addition to GCP
-# decomposition inputs. Fortunately, and beta parameters could be fixed thanks
-# to the literature who works with ADAM optimization. Besides, in case of
-# badly chosen LR, SGCP updates the LR by dividing LR by 10 after each failed
-# iteration until reaching 20 successive bad iteration.
+# decomposition inputs. Fortunately, LR and beta parameters can be fixed following
+# the literature on ADAM optimization. Besides, in case of badly chosen LR,
+# SGCP updates the LR by dividing LR by 10 after each failed iteration until
+# reaching 20 successive bad iteration.
 
 # SGCP
 tic = time.time()
@@ -92,7 +104,7 @@ time_sgcp = time.time() - tic
 
 ##############################################################################
 # To compare GCP decompositions, we choose non-negative CP with HALS (NN-CP)
-# since Bernoulli odds has a non-negative constraint.
+# since Bernoulli odds imply a nonnegativity constraint on the CP tensor..
 
 # NN-Parafac with HALS result
 tic = time.time()
@@ -101,31 +113,32 @@ cp_reconstruction = tl.cp_to_tensor((tensor_cp))
 time_cp = time.time() - tic
 
 ##############################################################################
-# In the example, we use binary tensor `tensor` as an input. It is possible to
-# have binary result by using numpy binomial function on reconstructed cp tensors.
-# Besides, we could compare the results with initial `cp_tensor` and reconstructed tensors
-# without calculating it.
+# In the example, we use binary tensor `tensor` as an input. It is possible
+# to have binary reconstructed tensor by using numpy binomial function on the
+# estimated cp tensors. Below instead we compare the estimated cp tensors with
+# the true `cp_tensor` which is the main goal of GCP.
 
 
 print("RMSE for GCP:", "%.2f" % RMSE(cp_tensor, cp_reconstruction_gcp))
-print("RMSE for SGCP:", "%.2f" %RMSE(cp_tensor, cp_reconstruction_sgcp))
-print("RMSE for NN-CP:", "%.2f" %RMSE(cp_tensor, cp_reconstruction))
+print("RMSE for SGCP:", "%.2f" % RMSE(cp_tensor, cp_reconstruction_sgcp))
+print("RMSE for NN-CP:", "%.2f" % RMSE(cp_tensor, cp_reconstruction))
 
-print("Loss for GCP:", "%.2f" %tl.sum(loss_operator(cp_tensor, cp_reconstruction_gcp, loss)))
-print("Loss for SGCP:", "%.2f" %tl.sum(loss_operator(cp_tensor, cp_reconstruction_sgcp, loss)))
-print("Loss for NN-CP:", "%.2f" %tl.sum(loss_operator(cp_tensor, cp_reconstruction, loss)))
+print("Loss for GCP:", "%.2f" % tl.sum(loss_operator(cp_tensor, cp_reconstruction_gcp, loss)))
+print("Loss for SGCP:", "%.2f" % tl.sum(loss_operator(cp_tensor, cp_reconstruction_sgcp, loss)))
+print("Loss for NN-CP:", "%.2f" % tl.sum(loss_operator(cp_tensor, cp_reconstruction, loss)))
 
-print("GCP time:", "%.2f" %time_gcp)
-print("SGCP time:", "%.2f" %time_sgcp)
-print("NN-CP time:", "%.2f" %time_cp)
+print("GCP time:", "%.2f" % time_gcp)
+print("SGCP time:", "%.2f" % time_sgcp)
+print("NN-CP time:", "%.2f" % time_cp)
 
 ##############################################################################
 # We compare the results according to processing time, root mean square error and
 # the selected loss. According to the final Bernoulli loss,
 # both GCP and SGCP give better results than NN-CP. Since SGCP requires many
 # iteration inside each epoch, processing time is much more than the others.
-# On the other hand, NN-CP is better in terms of root mean square error as it is
-# expected.
+# We can also compare the methods by error per iteration plot:
+
+each_iteration(errors_gcp, errors_sgcp)
 
 ##############################################################################
 # References
@@ -134,11 +147,11 @@ print("NN-CP time:", "%.2f" %time_cp)
 # [1] Hong, D., Kolda, T. G., & Duersch, J. A. (2020).
 # Generalized canonical polyadic tensor decomposition.
 # SIAM Review, 62(1), 133-163.
-# `(Online version)
+# `(Link 1)
 # <https://arxiv.org/abs/1808.07452>`_
 #
 # [2] Kolda, T. G., & Hong, D. (2020). Stochastic gradients for
 # large-scale tensor decomposition.
 # SIAM Journal on Mathematics of Data Science, 2(4), 1066-1095.
-# `(Online version)
+# `(Link 2)
 # <https://arxiv.org/abs/1906.01687>`_

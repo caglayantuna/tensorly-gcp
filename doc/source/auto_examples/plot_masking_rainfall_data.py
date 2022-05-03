@@ -7,7 +7,7 @@ On this page, you will find examples showing how to handle missing data with Gen
 ##############################################################################
 # Introduction
 # -----------------------
-# Missing values
+# Some data could have missing values in it.
 
 from tlgcp import generalized_parafac
 from tlgcp.data import get_tensor
@@ -16,8 +16,6 @@ import numpy as np
 import tensorly as tl
 import time
 from tensorly.decomposition import non_negative_parafac_hals
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 
@@ -34,7 +32,7 @@ def plot_components(f, title):
     for j in range(5):
         fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
         fig.set_size_inches(15, fig.get_figheight(), forward=True)
-        fig.suptitle(str(title) + ' ' + 'Rank'+ ' ' +str(j+1))
+        fig.suptitle(str(title) + ' ' + 'Rank' + ' ' + str(j+1))
         ax1.bar(np.arange(36),height=f[0][:, j], color='r')
         ax2.plot(f[1][:, j], 'o-')
         ax3.bar(np.arange(12), height=f[2][:, j], color='b')
@@ -48,12 +46,12 @@ tensor[np.isnan(tensor)] = 0
 # Parameters
 rank = 5
 init = 'random'
-loss = 'gamma'
+loss = 'gaussian'
 
 # GCP
 tic = time.time()
 tensorgcp, errorsgcp = generalized_parafac(tensor, rank=rank, init=init, return_errors=True, loss=loss,
-                                           n_iter_max=100)
+                                           mask=mask, n_iter_max=100)
 weightsgcp, factorsgcp = tensorgcp
 cp_reconstructiongcp = tl.cp_to_tensor((weightsgcp, factorsgcp))
 time_gcp = time.time() - tic

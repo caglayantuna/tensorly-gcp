@@ -26,9 +26,9 @@ On this page, you will find examples showing how to handle missing data with Gen
 
 Introduction
 -----------------------
-Missing values
+Some data could have missing values in it.
 
-.. GENERATED FROM PYTHON SOURCE LINES 11-81
+.. GENERATED FROM PYTHON SOURCE LINES 11-79
 
 .. code-block:: default
 
@@ -40,8 +40,6 @@ Missing values
     import tensorly as tl
     import time
     from tensorly.decomposition import non_negative_parafac_hals
-    import matplotlib
-    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
 
 
@@ -58,7 +56,7 @@ Missing values
         for j in range(5):
             fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
             fig.set_size_inches(15, fig.get_figheight(), forward=True)
-            fig.suptitle(str(title) + ' ' + 'Rank'+ ' ' +str(j+1))
+            fig.suptitle(str(title) + ' ' + 'Rank' + ' ' + str(j+1))
             ax1.bar(np.arange(36),height=f[0][:, j], color='r')
             ax2.plot(f[1][:, j], 'o-')
             ax3.bar(np.arange(12), height=f[2][:, j], color='b')
@@ -72,12 +70,12 @@ Missing values
     # Parameters
     rank = 5
     init = 'random'
-    loss = 'gamma'
+    loss = 'gaussian'
 
     # GCP
     tic = time.time()
     tensorgcp, errorsgcp = generalized_parafac(tensor, rank=rank, init=init, return_errors=True, loss=loss,
-                                               n_iter_max=100)
+                                               mask=mask, n_iter_max=100)
     weightsgcp, factorsgcp = tensorgcp
     cp_reconstructiongcp = tl.cp_to_tensor((weightsgcp, factorsgcp))
     time_gcp = time.time() - tic
@@ -199,10 +197,10 @@ Missing values
 
  .. code-block:: none
 
-    RMSE for GCP: 138.3425568479473
-    RMSE for NN-CP: 69.12937272077751
-    GCP time: 0.2496345043182373
-    NN-CP time: 0.5563652515411377
+    RMSE for GCP: 68.15340372966595
+    RMSE for NN-CP: 68.98924038972825
+    GCP time: 0.24031949043273926
+    NN-CP time: 0.2613644599914551
 
 
 
@@ -210,7 +208,7 @@ Missing values
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.377 seconds)
+   **Total running time of the script:** ( 0 minutes  5.000 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_masking_rainfall_data.py:
