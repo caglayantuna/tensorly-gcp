@@ -49,7 +49,10 @@ Available functions
 
     stochastic_gradient
 
-.. automodule:: tlgcp.data.tensor_dataset
+Available dataset
+-------------------
+
+.. automodule:: tlgcp.data
     :no-members:
     :no-inherited-members:
 
@@ -58,6 +61,19 @@ Available functions
     :template: function.rst
 
     get_tensor
+
+.. automodule:: tlgcp.data.tensor_dataset
+    :no-members:
+    :no-inherited-members:
+
+.. autosummary::
+    :toctree: generated
+    :template: function.rst
+
+    load_indian_pines
+    load_kinetic
+    load_rainfall
+    load_chicago_crime
 
 Decompositions
 -------------------

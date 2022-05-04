@@ -1,7 +1,6 @@
 import requests
 import scipy.io
 from io import BytesIO
-import imageio
 import numpy as np
 from zipfile import ZipFile
 import gzip
@@ -49,7 +48,7 @@ def load_indian_pines():
                 "Image Data Set: June 12, 1992 Indian Pine Test Site 3. Purdue University Research Repository. " \
                 "doi:10.4231/R7RX991C"
     licence = "Licensed under Attribution 3.0 Unported (https://creativecommons.org/licenses/by/3.0/legalcode)"
-    desc =  "Airborne Visible / Infrared Imaging Spectrometer (AVIRIS)  hyperspectral sensor data (aviris.jpl.nasa.gov/) " \
+    desc = "Airborne Visible / Infrared Imaging Spectrometer (AVIRIS)  hyperspectral sensor data (aviris.jpl.nasa.gov/) " \
             "were acquired on June 12, 1992 over the Purdue University Agronomy farm northwest " \
             "of West Lafayette and the surrounding area. This scene consists of 145 times 145 pixels and 220 spectral " \
             "reflectance bands in the wavelength range 0.4–2.5 10^(-6) meters."
@@ -92,7 +91,8 @@ def load_kinetic():
 
 def load_rainfall():
     """
-    (TODO)
+    Loads india rainfall dataset from csv file and turns into a tensor. This data is suitable for
+    missing data challenge.
     """
     path = dirname(__file__)
     df = pandas.read_csv(path + "/rainfall_india.csv")
@@ -115,7 +115,8 @@ def load_rainfall():
 
 def load_chicago_crime():
     """
-    (TODO)
+    Loads chicago crime dataset from website and returns it as tensorly tensor without storing the data
+    in the hard drive.The data is well suited for sparse decomposition.
     """
     url = 'https://s3.us-east-2.amazonaws.com/frostt/frostt_data/chicago-crime/comm/chicago-crime-comm.tns.gz'
     r = requests.get(url, allow_redirects=True)
@@ -123,13 +124,13 @@ def load_chicago_crime():
     array = [[int(x) for x in line.split()] for line in zip]
     tensor = np.zeros([6186, 24, 77, 32])
     for i in range(len(array)):
-        tensor[array[i][0]-1, array[i][1]-1, array[i][2]-1, array[i][3]-1] = array[i][4]
+        tensor[array[i][0] - 1, array[i][1] - 1, array[i][2] - 1, array[i][3] - 1] = array[i][4]
     reference = "Smith, S., Huang, K., Sidiropoulos, N. D., & Karypis, G. (2018, May). "\
                 "Streaming tensor factorization for infinite data sources. In "\
                 "Proceedings of the 2018 SIAM International Conference on Data Mining"\
                 "(pp. 81-89). Society for Industrial and Applied Mathematics"
     desc = "Streaming Constraint Sparse"
-    licence="Licence is needed"
+    licence = "Licence is needed"
     return Bunch(
         tensor=tensor,
         dims=["Day", "Hour", "Community", "Crime Type"],

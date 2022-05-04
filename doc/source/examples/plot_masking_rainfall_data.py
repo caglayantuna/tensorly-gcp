@@ -7,7 +7,7 @@ On this page, you will find examples showing how to handle missing data with Gen
 ##############################################################################
 # Introduction
 # -----------------------
-# Some data could have missing values in it.
+# Missing values can be handled through GCP decomposition by masking them.
 
 from tlgcp import generalized_parafac
 from tlgcp.data import get_tensor
@@ -37,6 +37,10 @@ def plot_components(f, title):
         ax2.plot(f[1][:, j], 'o-')
         ax3.bar(np.arange(12), height=f[2][:, j], color='b')
 
+##############################################################################
+# Here, we use india rainfall dataset which ahs some missing values in it.
+# If data doesn't come with a mask, we need to create it ourselves by looking to nan values
+# in data.
 
 tensor = get_tensor("rainfall")
 mask = tl.ones(tl.shape(tensor))
@@ -46,7 +50,10 @@ tensor[np.isnan(tensor)] = 0
 # Parameters
 rank = 5
 init = 'random'
-loss = 'gaussian'
+loss = 'gamma'
+
+##############################################################################
+# Both GCP and SGCP allow us to use mask. Here, we will use only GCP.
 
 # GCP
 tic = time.time()
@@ -73,6 +80,9 @@ print("RMSE for NN-CP:", RMSE(tensor, cp_reconstruction))
 
 print("GCP time:", time_gcp)
 print("NN-CP time:", time_cp)
+
+############################################################
+# Here, we plot components of the factors for interpretation.
 
 plot_components(factorsgcp, 'GCP')
 plot_components(factors, 'NN-Parafac')

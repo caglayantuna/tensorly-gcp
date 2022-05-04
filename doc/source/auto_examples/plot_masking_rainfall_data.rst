@@ -26,9 +26,9 @@ On this page, you will find examples showing how to handle missing data with Gen
 
 Introduction
 -----------------------
-Some data could have missing values in it.
+Missing values can be handled through GCP decomposition by masking them.
 
-.. GENERATED FROM PYTHON SOURCE LINES 11-79
+.. GENERATED FROM PYTHON SOURCE LINES 11-40
 
 .. code-block:: default
 
@@ -62,6 +62,23 @@ Some data could have missing values in it.
             ax3.bar(np.arange(12), height=f[2][:, j], color='b')
 
 
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 41-44
+
+Here, we use india rainfall dataset which ahs some missing values in it.
+If data doesn't come with a mask, we need to create it ourselves by looking to nan values
+in data.
+
+.. GENERATED FROM PYTHON SOURCE LINES 44-55
+
+.. code-block:: default
+
+
     tensor = get_tensor("rainfall")
     mask = tl.ones(tl.shape(tensor))
     mask[np.isnan(tensor)] = 0
@@ -70,7 +87,23 @@ Some data could have missing values in it.
     # Parameters
     rank = 5
     init = 'random'
-    loss = 'gaussian'
+    loss = 'gamma'
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 56-57
+
+Both GCP and SGCP allow us to use mask. Here, we will use only GCP.
+
+.. GENERATED FROM PYTHON SOURCE LINES 57-84
+
+.. code-block:: default
+
 
     # GCP
     tic = time.time()
@@ -98,8 +131,6 @@ Some data could have missing values in it.
     print("GCP time:", time_gcp)
     print("NN-CP time:", time_cp)
 
-    plot_components(factorsgcp, 'GCP')
-    plot_components(factors, 'NN-Parafac')
 
 
 
@@ -119,6 +150,38 @@ Some data could have missing values in it.
          :alt: NN-HALS
          :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_002.png
          :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    RMSE for GCP: 210.98159025273918
+    RMSE for NN-CP: 69.20244982400935
+    GCP time: 0.14778685569763184
+    NN-CP time: 0.4366908073425293
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 85-86
+
+Here, we plot components of the factors for interpretation.
+
+.. GENERATED FROM PYTHON SOURCE LINES 86-89
+
+.. code-block:: default
+
+
+    plot_components(factorsgcp, 'GCP')
+    plot_components(factors, 'NN-Parafac')
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
 
     *
 
@@ -191,24 +254,13 @@ Some data could have missing values in it.
          :class: sphx-glr-multi-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    RMSE for GCP: 68.15340372966595
-    RMSE for NN-CP: 68.98924038972825
-    GCP time: 0.24031949043273926
-    NN-CP time: 0.2613644599914551
-
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.000 seconds)
+   **Total running time of the script:** ( 0 minutes  5.144 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_masking_rainfall_data.py:

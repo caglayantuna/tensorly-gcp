@@ -31,7 +31,7 @@ def vectorized_factors_to_tensor(vectorized_factors, shape, rank, mask=None, ret
 
     Parameters
     ----------
-    vectorized_factors : 1darray, a vector of length :math:`\prod(shape) * rank^{len(shape)}`
+    vectorized_factors : 1d array, a vector of length :math:`\prod(shape) * rank^{len(shape)}`
     shape : tuple, contains the row dimensions of the factors
     rank : int, number of components in the CP decomposition
     mask : ndarray
@@ -39,7 +39,6 @@ def vectorized_factors_to_tensor(vectorized_factors, shape, rank, mask=None, ret
         the values are missing and 1 everywhere else.
     return_factors : bool, if True returns factors list instead of full tensor 
         Default: False
-
 
     Returns
     -------
@@ -50,7 +49,7 @@ def vectorized_factors_to_tensor(vectorized_factors, shape, rank, mask=None, ret
 
     cursor = 0
     for i in range(n_factors):
-        factors.append(tl.reshape(vectorized_factors[cursor: cursor + shape[i]*rank], [shape[i], rank]))
+        factors.append(tl.reshape(vectorized_factors[cursor: cursor + shape[i] * rank], [shape[i], rank]))
         cursor += shape[i] * rank
 
     if return_factors:
@@ -70,7 +69,7 @@ def vectorized_mttkrp(tensor, vectorized_factors, rank):
     Parameters
     ----------
     tensor : ndarray, data tensor
-    vectorized_factors : 1darray, factors of the CP decomposition stored in one vector 
+    vectorized_factors : 1d array, factors of the CP decomposition stored in one vector
     rank : int, number of components in the CP decomposition
 
     Returns
@@ -123,23 +122,35 @@ def loss_operator_func(tensor, rank, loss, mask=None):
     if loss == 'gaussian':
         return lambda x: tl.sum((tensor - vectorized_factors_to_tensor(x, shape, rank, mask)) ** 2) / size
     elif loss == 'bernoulli_odds':
-        return lambda x: tl.sum(tl.log(vectorized_factors_to_tensor(x, shape, rank, mask) + 1) -
-                            (tensor * tl.log(vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon))) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return tl.sum(tl.log(est + 1) - (tensor * tl.log(est + epsilon))) / size
+        return func
     elif loss == 'bernoulli_logit':
-        return lambda x: tl.sum(tl.log(tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask)) + 1) -
-                                (tensor * vectorized_factors_to_tensor(x, shape, rank, mask, mask))) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return tl.sum(tl.log(tl.exp(est) + 1) - (tensor * est)) / size
+        return func
     elif loss == 'rayleigh':
-        return lambda x: tl.sum(2 * tl.log(vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon) + (math.pi / 4) *
-                                ((tensor / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)) ** 2)) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return tl.sum(2 * tl.log(est + epsilon) + (math.pi / 4) * ((tensor / (est + epsilon)) ** 2)) / size
+        return func
     elif loss == 'poisson_count':
-        return lambda x: tl.sum(vectorized_factors_to_tensor(x, shape, rank, mask) - tensor *
-                                tl.log(vectorized_factors_to_tensor(x, shape, rank) + epsilon)) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return tl.sum(est - tensor * tl.log(est + epsilon)) / size
+        return func
     elif loss == 'poisson_log':
-        return lambda x: tl.sum(tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask)) -
-                                (tensor * vectorized_factors_to_tensor(x, shape, rank, mask))) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return tl.sum(tl.exp(est) - (tensor * est)) / size
+        return func
     elif loss == 'gamma':
-        return lambda x: tl.sum(tensor / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon) +
-                                tl.log(vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return tl.sum(tensor / (est + epsilon) + tl.log(est + epsilon)) / size
+        return func
     else:
         raise ValueError('Loss "{}" not recognized'.format(loss))
 
@@ -171,29 +182,40 @@ def gradient_operator_func(tensor, rank, loss, mask=None):
     size = tl.prod(tl.tensor(shape, **tl.context(tensor)))
     epsilon = 1e-8
     if loss == 'gaussian':
-        return lambda x: vectorized_mttkrp(2 * (vectorized_factors_to_tensor(x, shape, rank, mask) - tensor), x, rank) \
-                         / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return vectorized_mttkrp(2 * (est - tensor), x, rank) / size
+        return func
     elif loss == 'bernoulli_odds':
-        return lambda x: vectorized_mttkrp(1 / (vectorized_factors_to_tensor(x, shape, rank, mask) + 1)
-                                           - (tensor / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)),
-                                           x, rank) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return vectorized_mttkrp(1 / (est + 1) - (tensor / (est + epsilon)), x, rank) / size
+        return func
     elif loss == 'bernoulli_logit':
-        return lambda x: vectorized_mttkrp(tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask)) /
-                                           (tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask)) + 1) - tensor, x,
-                                           rank) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return vectorized_mttkrp(tl.exp(est) / (tl.exp(est) + 1) - tensor, x, rank) / size
+        return func
     elif loss == 'rayleigh':
-        return lambda x: vectorized_mttkrp(2 / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)
-                                           - (math.pi / 2) * (tensor ** 2) /
-                                           ((vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon) ** 3), x, rank) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return vectorized_mttkrp(2 / (est + epsilon) - (math.pi / 2) * (tensor ** 2) / ((est + epsilon) ** 3), x, rank) / size
+        return func
     elif loss == 'poisson_count':
-        return lambda x: vectorized_mttkrp(1 - tensor /
-                                           (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon), x, rank) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return vectorized_mttkrp(1 - tensor / (est + epsilon), x, rank) / size
+        return func
     elif loss == 'poisson_log':
-        return lambda x: vectorized_mttkrp(tl.exp(vectorized_factors_to_tensor(x, shape, rank, mask))
-                                           - tensor, x, rank) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return vectorized_mttkrp(tl.exp(est) - tensor, x, rank) / size
+        return func
     elif loss == 'gamma':
-        return lambda x: vectorized_mttkrp(-tensor / ((vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon) ** 2) \
-                                           + (1 / (vectorized_factors_to_tensor(x, shape, rank, mask) + epsilon)), x, rank) / size
+        def func(x):
+            est = vectorized_factors_to_tensor(x, shape, rank, mask)
+            return vectorized_mttkrp(-tensor / ((est + epsilon) ** 2) + (1 / (est + epsilon)), x, rank) / size
+        return func
     else:
         raise ValueError('Loss "{}" not recognized'.format(loss))
 

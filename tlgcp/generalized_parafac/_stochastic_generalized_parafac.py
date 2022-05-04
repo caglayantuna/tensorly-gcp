@@ -134,9 +134,14 @@ def stochastic_generalized_parafac(tensor, rank, n_iter_max=1000, init='random',
     momentum_second = []
     t_iter = 1
     indices_tuple = tuple([rng.randint(0, tl.shape(f)[0], size=batch_size, dtype=int) for f in factors])
-    current_loss = loss_operator(tensor[indices_tuple],
-                                 tl.sum(sample_khatri_rao(factors, indices_list=indices_tuple, n_samples=batch_size)[0],
-                                 axis=1), loss=loss, mask=mask)
+    if mask is not None:
+        current_loss = loss_operator(tensor[indices_tuple],
+                                     tl.sum(sample_khatri_rao(factors, indices_list=indices_tuple, n_samples=batch_size)[0],
+                                            axis=1), loss=loss, mask=mask[indices_tuple])
+    else:
+        current_loss = loss_operator(tensor[indices_tuple],
+                                     tl.sum(sample_khatri_rao(factors, indices_list=indices_tuple, n_samples=batch_size)[0],
+                                            axis=1), loss=loss)
     # global loss
     current_loss = tl.sum(current_loss)
     for i in modes:
@@ -165,9 +170,14 @@ def stochastic_generalized_parafac(tensor, rank, n_iter_max=1000, init='random',
 
             t_iter += 1
         # Compute the current error
-        current_loss = loss_operator(tensor[indices_tuple],
-                                     tl.sum(sample_khatri_rao(factors, indices_list=indices_tuple, n_samples=batch_size)[0],
-                                     axis=1), loss=loss, mask=mask)
+        if mask is not None:
+            current_loss = loss_operator(tensor[indices_tuple],
+                                         tl.sum(sample_khatri_rao(factors, indices_list=indices_tuple, n_samples=batch_size)[0],
+                                         axis=1), loss=loss, mask=mask[indices_tuple])
+        else:
+            current_loss = loss_operator(tensor[indices_tuple],
+                                         tl.sum(sample_khatri_rao(factors, indices_list=indices_tuple, n_samples=batch_size)[0],
+                                         axis=1), loss=loss)
         # global loss
         current_loss = tl.sum(current_loss)
         if current_loss >= loss_old:
