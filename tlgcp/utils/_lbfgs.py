@@ -31,7 +31,7 @@ def lbfgs(loss, x0, gradient=None, n_iter_max=100, non_negative=False, norm=1.0)
     Currently, it supports only numpy backend, but it could be improved for other backends as well.
 
     * pytorch: imposing non-negative constraint not good also it fails for some losses because of the backward part, probably.
-    * tensorflow: There is no option for constrained loss, and it doesn't return error per iteration. Besides, tensorflow_probability library is a requirement.
+    * tensorflow: There is no option for constrained loss, and it doesn't return error per iteration. Besides, tensorflow_probability library is a dependency.
     * jax: jax.scipy.minimize only supports bfgs according to website (https://jax.readthedocs.io/en/latest/_autosummary/jax.scipy.optimize.minimize.html). However, there are some attempts to add lbfgs (https://github.com/google/jax/pull/6053).
     * mxnet: This issue can be followed. https://github.com/apache/incubator-mxnet/issues/9182
     """

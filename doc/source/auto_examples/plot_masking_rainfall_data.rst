@@ -53,13 +53,13 @@ Missing values can be handled through GCP decomposition by masking them.
 
 
     def plot_components(f, title):
+        fig, axs = plt.subplots(5, 3)
         for j in range(5):
-            fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
             fig.set_size_inches(15, fig.get_figheight(), forward=True)
-            fig.suptitle(str(title) + ' ' + 'Rank' + ' ' + str(j+1))
-            ax1.bar(np.arange(36),height=f[0][:, j], color='r')
-            ax2.plot(f[1][:, j], 'o-')
-            ax3.bar(np.arange(12), height=f[2][:, j], color='b')
+            fig.suptitle(str(title))
+            axs[j, 0].bar(np.arange(36), height=f[0][:, j], color='r')
+            axs[j, 1].plot(f[1][:, j], 'o-')
+            axs[j, 2].bar(np.arange(12), height=f[2][:, j], color='b')
 
 
 
@@ -70,13 +70,14 @@ Missing values can be handled through GCP decomposition by masking them.
 
 .. GENERATED FROM PYTHON SOURCE LINES 41-44
 
-Here, we use india rainfall dataset which ahs some missing values in it.
-If data doesn't come with a mask, we need to create it ourselves by looking to nan values
-in data.
+Here, we use india rainfall dataset which has some missing values in it.
+If data doesn't come with a mask, we need to create it ourselves e.g. by searching
+the nan values in data.
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-55
+.. GENERATED FROM PYTHON SOURCE LINES 44-56
 
 .. code-block:: default
+
 
 
     tensor = get_tensor("rainfall")
@@ -87,7 +88,7 @@ in data.
     # Parameters
     rank = 5
     init = 'random'
-    loss = 'gamma'
+    loss = 'gaussian'
 
 
 
@@ -96,11 +97,11 @@ in data.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 56-57
+.. GENERATED FROM PYTHON SOURCE LINES 57-58
 
 Both GCP and SGCP allow us to use mask. Here, we will use only GCP.
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-84
+.. GENERATED FROM PYTHON SOURCE LINES 58-85
 
 .. code-block:: default
 
@@ -158,100 +159,55 @@ Both GCP and SGCP allow us to use mask. Here, we will use only GCP.
 
  .. code-block:: none
 
-    RMSE for GCP: 210.98159025273918
-    RMSE for NN-CP: 69.20244982400935
-    GCP time: 0.14778685569763184
-    NN-CP time: 0.4366908073425293
+    RMSE for GCP: 68.13162666364799
+    RMSE for NN-CP: 69.20314856218323
+    GCP time: 0.3781435489654541
+    NN-CP time: 0.5225670337677002
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-86
+.. GENERATED FROM PYTHON SOURCE LINES 86-88
 
 Here, we plot components of the factors for interpretation.
+Here GCP components,
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-89
+.. GENERATED FROM PYTHON SOURCE LINES 88-91
 
 .. code-block:: default
 
 
     plot_components(factorsgcp, 'GCP')
+
+
+
+
+.. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_003.png
+   :alt: GCP
+   :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_003.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 92-93
+
+and NN-CP components;
+
+.. GENERATED FROM PYTHON SOURCE LINES 93-95
+
+.. code-block:: default
+
+
     plot_components(factors, 'NN-Parafac')
 
 
 
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_003.png
-         :alt: GCP Rank 1
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_003.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_004.png
-         :alt: GCP Rank 2
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_004.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_005.png
-         :alt: GCP Rank 3
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_005.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_006.png
-         :alt: GCP Rank 4
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_006.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_007.png
-         :alt: GCP Rank 5
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_007.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_008.png
-         :alt: NN-Parafac Rank 1
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_008.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_009.png
-         :alt: NN-Parafac Rank 2
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_009.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_010.png
-         :alt: NN-Parafac Rank 3
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_010.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_011.png
-         :alt: NN-Parafac Rank 4
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_011.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_012.png
-         :alt: NN-Parafac Rank 5
-         :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_012.png
-         :class: sphx-glr-multi-img
+.. image-sg:: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_004.png
+   :alt: NN-Parafac
+   :srcset: /auto_examples/images/sphx_glr_plot_masking_rainfall_data_004.png
+   :class: sphx-glr-single-img
 
 
 
@@ -260,7 +216,7 @@ Here, we plot components of the factors for interpretation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.144 seconds)
+   **Total running time of the script:** ( 0 minutes  4.968 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_masking_rainfall_data.py:

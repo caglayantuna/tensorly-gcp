@@ -29,18 +29,19 @@ def each_iteration(a, title):
 
 
 def plot_components(f, title):
+    fig, axs = plt.subplots(5, 3)
     for j in range(5):
-        fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
         fig.set_size_inches(15, fig.get_figheight(), forward=True)
-        fig.suptitle(str(title) + ' ' + 'Rank' + ' ' + str(j+1))
-        ax1.bar(np.arange(36),height=f[0][:, j], color='r')
-        ax2.plot(f[1][:, j], 'o-')
-        ax3.bar(np.arange(12), height=f[2][:, j], color='b')
+        fig.suptitle(str(title))
+        axs[j, 0].bar(np.arange(36), height=f[0][:, j], color='r')
+        axs[j, 1].plot(f[1][:, j], 'o-')
+        axs[j, 2].bar(np.arange(12), height=f[2][:, j], color='b')
 
 ##############################################################################
-# Here, we use india rainfall dataset which ahs some missing values in it.
-# If data doesn't come with a mask, we need to create it ourselves by looking to nan values
-# in data.
+# Here, we use india rainfall dataset which has some missing values in it.
+# If data doesn't come with a mask, we need to create it ourselves e.g. by searching
+# the nan values in data.
+
 
 tensor = get_tensor("rainfall")
 mask = tl.ones(tl.shape(tensor))
@@ -50,7 +51,7 @@ tensor[np.isnan(tensor)] = 0
 # Parameters
 rank = 5
 init = 'random'
-loss = 'gamma'
+loss = 'gaussian'
 
 ##############################################################################
 # Both GCP and SGCP allow us to use mask. Here, we will use only GCP.
@@ -83,6 +84,11 @@ print("NN-CP time:", time_cp)
 
 ############################################################
 # Here, we plot components of the factors for interpretation.
+# Here GCP components,
 
 plot_components(factorsgcp, 'GCP')
+
+############################################################
+# and NN-CP components;
+
 plot_components(factors, 'NN-Parafac')

@@ -39,6 +39,10 @@ def load_indian_pines():
     in the hard drive. This dataset could be useful for non-negative constrained decomposition methods and
     classification/segmentation applications with tha available ground truth in
     http://www.ehu.eus/ccwintco/uploads/c/c4/Indian_pines_gt.mat.
+
+    Returns
+    -------
+    dictionary : [tensor, dims, reference, DESC, LICENCE]
     """
 
     url = 'http://www.ehu.eus/ccwintco/uploads/6/67/Indian_pines_corrected.mat'
@@ -65,6 +69,9 @@ def load_kinetic():
     Loads kinetic fluorescence dataset from website and returns it as tensorly tensor without storing the data
     in the hard drive.The data is well suited for Parafac and multi-way partial least squares regression (N-PLS).
 
+    Returns
+    -------
+    dictionary : [tensor, dims, reference, DESC, LICENCE]
     """
     url = 'http://models.life.ku.dk/sites/default/files/Kinetic_Fluor.zip'
     r = requests.get(url, allow_redirects=True)
@@ -93,6 +100,10 @@ def load_rainfall():
     """
     Loads india rainfall dataset from csv file and turns into a tensor. This data is suitable for
     missing data challenge.
+
+    Returns
+    -------
+    dictionary : [tensor, dims, reference, DESC, LICENCE]
     """
     path = dirname(__file__)
     df = pandas.read_csv(path + "/rainfall_india.csv")
@@ -107,7 +118,7 @@ def load_rainfall():
                 tensor[j, i, :] = c[row, 2:14]
     return Bunch(
         tensor=tensor,
-        dims=["division", "todo", "month"],
+        dims=["division", "year", "month"],
         reference="https://www.kaggle.com/datasets/rajanand/rainfall-in-india",
         DESC="This data set contains monthly rainfall detail of 36 meteorological sub-divisions of India",
         LICENCE="CC BY-SA 4.0, https://data.gov.in/government-open-data-license-india")
@@ -115,8 +126,12 @@ def load_rainfall():
 
 def load_chicago_crime():
     """
-    Loads chicago crime dataset from website and returns it as tensorly tensor without storing the data
+    Loads chicago crime dataset from website and returns it as a tensorly tensor without storing the data
     in the hard drive.The data is well suited for sparse decomposition.
+
+    Returns
+    -------
+    dictionary : [tensor, dims, reference, DESC, LICENCE]
     """
     url = 'https://s3.us-east-2.amazonaws.com/frostt/frostt_data/chicago-crime/comm/chicago-crime-comm.tns.gz'
     r = requests.get(url, allow_redirects=True)
