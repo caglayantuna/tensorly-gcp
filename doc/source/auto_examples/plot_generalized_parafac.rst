@@ -174,21 +174,13 @@ reaching 20 successive bad iteration.
     tic = time.time()
     tensor_sgcp, errors_sgcp = stochastic_generalized_parafac(tensor, rank=rank, init=init,
                                                               return_errors=True, loss=loss, lr=1e-3,
-                                                              n_iter_max=1000, batch_size=50, epochs=100)
+                                                              n_iter_max=10, batch_size=50, epochs=100)
     cp_reconstruction_sgcp = tl.cp_to_tensor(tensor_sgcp)
     time_sgcp = time.time() - tic
 
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Sufficient number of bad epochs
 
 
 
@@ -251,15 +243,15 @@ the true `cp_tensor` which is the main goal of GCP.
 
  .. code-block:: none
 
-    RMSE for GCP: 0.10
-    RMSE for SGCP: 0.20
-    RMSE for NN-CP: 0.40
-    Loss for GCP: 0.67
-    Loss for SGCP: 0.71
-    Loss for NN-CP: 0.92
-    GCP time: 2.65
-    SGCP time: 6.79
-    NN-CP time: 0.43
+    RMSE for GCP: 0.09
+    RMSE for SGCP: 0.25
+    RMSE for NN-CP: 0.35
+    Loss for GCP: 0.68
+    Loss for SGCP: 0.74
+    Loss for NN-CP: 0.88
+    GCP time: 1.82
+    SGCP time: 0.57
+    NN-CP time: 0.63
 
 
 
@@ -311,7 +303,7 @@ SIAM Journal on Mathematics of Data Science, 2(4), 1066-1095.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  10.152 seconds)
+   **Total running time of the script:** ( 0 minutes  3.329 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_generalized_parafac.py:

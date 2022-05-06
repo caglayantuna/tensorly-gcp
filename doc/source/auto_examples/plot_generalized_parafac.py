@@ -98,7 +98,7 @@ time_gcp = time.time() - tic
 tic = time.time()
 tensor_sgcp, errors_sgcp = stochastic_generalized_parafac(tensor, rank=rank, init=init,
                                                           return_errors=True, loss=loss, lr=1e-3,
-                                                          n_iter_max=1000, batch_size=50, epochs=100)
+                                                          n_iter_max=10, batch_size=50, epochs=100)
 cp_reconstruction_sgcp = tl.cp_to_tensor(tensor_sgcp)
 time_sgcp = time.time() - tic
 
