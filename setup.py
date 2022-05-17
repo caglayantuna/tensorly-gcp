@@ -52,7 +52,7 @@ config = {
     'long_description': README,
     'long_description_content_type': 'text/x-rst',
     'author': 'Caglayan Tuna',
-    'author_email': '', # TODO
+    'author_email': 'caglayantun@gmail.com',
     'version': VERSION,
     'install_requires': ['numpy', 'scipy', 'tensorly'],
     'license': 'Modified BSD',
