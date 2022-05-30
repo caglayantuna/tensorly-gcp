@@ -20,7 +20,7 @@ jobs:
       run: |
         pytest -vvv --cov=tlgcp --cov-report=xml
     - name: Check coverage with CodeCov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v2
       with:
         file: ./coverage.xml
         verbose: true
