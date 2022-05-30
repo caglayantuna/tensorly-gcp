@@ -4,7 +4,7 @@
 .. image:: https://github.com/caglayantuna/tensorly-gcp/actions/workflows/test.yml/badge.svg
     :target: https://github.com/caglayantuna/tensorly-gcp/actions/workflows/test.yml
 
-.. image:: https://codecov.io/gh/caglayantuna/tensorly-gcp/branch/main/graph/badge.svg?token=mnZ234sGSA
+.. image:: https://codecov.io/gh/caglayantuna/tensorly-gcp/branch/master/graph/badge.svg?token=PZXF0oHIly
     :target: https://codecov.io/gh/caglayantuna/tensorly-gcp
 
 TensorLy-Gcp  
