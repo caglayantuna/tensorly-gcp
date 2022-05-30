@@ -1,5 +1,9 @@
 numpy
 scipy
+requests
+gzip
+zipfile
+pandas
 tensorly
 pytest
 pytest-cov
