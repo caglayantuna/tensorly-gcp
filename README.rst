@@ -1,3 +1,12 @@
+.. image:: https://badge.fury.io/py/tensorly-quantum.svg
+    :target: https://badge.fury.io/py/tensorly-quantum
+
+.. image:: https://github.com/caglayantuna/tensorly-gcp/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/caglayantuna/tensorly-gcp/actions/workflows/test.yml
+
+.. image:: https://codecov.io/gh/caglayantuna/tensorly-gcp/branch/main/graph/
+    :target: https://codecov.io/gh/caglayantuna/tensorly-gcp
+
 TensorLy-Gcp  
 ===============================================  
 TensorLy-Gcp is a Python library for fitting generalized parafac decomposition (GCP) [1] and its stochastic version (SGCP) [2] which allows using different losses rather than only Euclidean. Tensorly-Gcp builds on top of `TensorLy <http://tensorly.org/dev/installation.html>`_. Both GCP and SGCP algorithms fit generalized parafac given an input tensor using a gradient-based algorithm. Gradients are computed according to a loss selected by the user, and may be provided by the user, allowing customization. While GCP implementation uses Limited-memory BFGS (LBFGS) method for optimization, SGCP uses ADAM optimization as in [2]. 
